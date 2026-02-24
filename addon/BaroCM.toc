@@ -1,0 +1,43 @@
+## Interface: 120001
+## Title: BaroCM
+## Notes: Enhances Blizzard's Cooldown Manager.
+## IconTexture: Interface\AddOns\BaroCM\resources\barocm_mini_logo
+## Author: Baromad
+## Version: 1.1.3
+## SavedVariables: BaroCooldownManagerDB
+
+core/logging.lua
+core/utils/annotations.lua
+core/utils/frame_point.lua
+core/utils/row_growth.lua
+core/utils/col_growth.lua
+core/utils/growth_prio.lua
+core/utils/item_type.lua
+core/utils/utils.lua
+
+core/ui/style_variables.lua
+core/ui/widgets.lua
+core/ui/group_btn.lua
+core/ui/item_btn.lua
+core/ui/navigator_panel.lua
+core/ui/properties_panel.lua
+core/ui/title_panel.lua
+core/ui/options_panel.lua
+
+core/item/item_frame.lua
+core/item/item.lua
+core/item/item_collection.lua
+
+core/group/group_frame.lua
+core/group/group.lua
+core/group/group_collection.lua
+
+core/custom_item/trinket.lua
+core/custom_item/trinket_collection.lua
+
+core/cdm/cdm_item.lua
+core/cdm/cdm_item_collection.lua
+
+core/item_binding_watcher.lua
+
+init.lua

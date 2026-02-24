@@ -1,0 +1,12 @@
+[submodule "externals/wow-ui-source"]
+	path = externals/wow-ui-source
+	url = https://github.com/Gethe/wow-ui-source/
+	branch = live
+[submodule "externals/FramexmlAnnotations"]
+	path = externals/FramexmlAnnotations
+	url = https://github.com/NumyAddon/FramexmlAnnotations.git
+	branch = live
+[submodule "externals/WoWAddonDevGuide"]
+	path = externals/WoWAddonDevGuide
+	url = https://github.com/Amadeus-/WoWAddonDevGuide.git
+	branch = master
