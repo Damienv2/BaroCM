@@ -10,6 +10,7 @@ BaroCM is a World of Warcraft addon that extends Blizzard’s Cooldown Viewer wi
 ### Medium Priority
 - Option to hide activation overlay
 - Add tracking for Racial Abilities
+- Fix bug causing Item Selection warning message to display for unlearned spells
 ### Low Priority
 - Spell icons in item selection dropdown
 - Already selected option selected in item selection dropdown
