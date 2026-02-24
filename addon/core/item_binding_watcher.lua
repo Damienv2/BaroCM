@@ -29,12 +29,12 @@ function ItemBindingWatcher:watch()
 
             -- Check if any trinkets match
             local trinket1 = Addon.inst.trinketCollection.trinket1
-            if trinket1:isOnUseTrinket() == true and tostring(item.slotId) == tostring(trinket1.slotId) then
+            if trinket1:isOnUseTrinket() == true and tostring(item.slotId) == tostring(trinket1.slotId) and select(1, GetSpecializationInfo(GetSpecialization())) == item.specId then
                 item:bindTrinket(trinket1)
                 trinket1:bind(item)
             end
             local trinket2 = Addon.inst.trinketCollection.trinket2
-            if trinket2:isOnUseTrinket() == true and tostring(item.slotId) == tostring(trinket2.slotId) then
+            if trinket2:isOnUseTrinket() == true and tostring(item.slotId) == tostring(trinket2.slotId) and select(1, GetSpecializationInfo(GetSpecialization())) == item.specId then
                 item:bindTrinket(trinket2)
                 trinket2:bind(item)
             end
