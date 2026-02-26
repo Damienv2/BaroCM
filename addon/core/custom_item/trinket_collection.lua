@@ -19,6 +19,13 @@ function TrinketCollection.default()
     self.trinketEventMonitor:RegisterEvent("SPELL_UPDATE_COOLDOWN")
     self.trinketEventMonitor:SetScript("OnEvent", function(_, event)
         if event == "PLAYER_EQUIPMENT_CHANGED" then
+            if self.trinket1 ~= nil then
+                self.trinket1:unbind()
+            end
+            if self.trinket2 ~= nil then
+                self.trinket2:unbind()
+            end
+
             self.trinket1 = Addon.Trinket.default(GetInventoryItemID("player", 13), 13)
             self.trinket2 = Addon.Trinket.default(GetInventoryItemID("player", 14), 14)
             self.trinket1:refreshRuntimeState()
