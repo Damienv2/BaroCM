@@ -7,6 +7,7 @@ local Addon = select(2, ...)
 ---@field parentItemCollection ItemCollection
 ---@field itemFrame ItemFrame
 ---@field itemType ItemType
+---@field cooldownId number
 ---@field spellId number
 ---@field spellName string
 ---@field boundCdmItem CdmItem
@@ -26,6 +27,7 @@ function Item.default(parentItemCollection)
     self.itemFrame = nil
     self.itemType = nil
 
+    self.cooldownId = nil
     self.spellId = nil
     self.spellName = nil
     self.boundCdmItem = nil
@@ -47,6 +49,7 @@ function Item.deserialize(serializedItem, parentItemCollection)
     self.parentItemCollection = parentItemCollection
     self.itemFrame = nil
     self.itemType = serializedItem.itemType
+    self.cooldownId = serializedItem.cooldownId
     self.spellId = serializedItem.spellId
     self.spellName = serializedItem.spellName
     self.boundCdmItem = nil
@@ -63,6 +66,7 @@ function Item:serialize()
         id = self.id,
         specId = self.specId,
         itemType = self.itemType,
+        cooldownId = self.cooldownId,
         spellId = self.spellId,
         spellName = self.spellName,
         slotId = self.slotId,
@@ -101,12 +105,15 @@ function Item:delete()
     Addon.inst.groupCollection:save()
 end
 
+---@param cooldownId number
 ---@param spellId number
-function Item:setSpellId(spellId)
+---@param cooldownType ItemType
+function Item:setSpell(cooldownId, spellId, cooldownType)
     self.slotId = nil
     self.itemId = nil
 
-    self.itemType = Addon.ItemType.CDM
+    self.itemType = cooldownType
+    self.cooldownId = cooldownId
     self.spellId = spellId
     self.spellName = C_Spell.GetSpellInfo(spellId).name
 
@@ -115,10 +122,11 @@ end
 
 ---@param slotId number
 function Item:setSlotId(slotId)
+    self.cooldownId = nil
     self.spellId = nil
     self.spellName = nil
 
-    self.itemType = Addon.ItemType.TRINKET
+    self.itemType = Addon.ItemType.ITEM
     self.slotId = slotId
     self.itemId = GetInventoryItemID("player", slotId)
 
@@ -190,9 +198,9 @@ function Item:unbind()
 end
 
 function Item:getLabel()
-    if self.itemType == Addon.ItemType.CDM then
+    if self.itemType == Addon.ItemType.SPELL or self.itemType == Addon.ItemType.AURA then
         return self.spellName
-    elseif self.itemType == Addon.ItemType.TRINKET then
+    elseif self.itemType == Addon.ItemType.ITEM then
         return "Trinket Slot " .. tostring(self.slotId)
     end
 end

@@ -256,11 +256,51 @@ function PropertiesPanel:setItemPropertiesPanel(item, itemBtn)
 
     local heightIncrement = math.floor(self.frameHeight / 20)
 
-    -- Setup the Spell region
     local spellRegion = CreateFrame("Frame", nil, self.scrollContentFrame)
-    spellRegion:SetPoint(Addon.FramePoint.TOPLEFT, self.scrollContentFrame, Addon.FramePoint.TOPLEFT, 0, 0)
+    local spellWarningText = spellRegion:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local auraRegion = CreateFrame("Frame", nil, self.scrollContentFrame)
+    local auraWarningText = spellRegion:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local itemRegion = CreateFrame("Frame", nil, self.scrollContentFrame)
+
+    -- Setup the Item Type
+    local cooldownTypeRegion = CreateFrame("Frame", nil, self.scrollContentFrame)
+    cooldownTypeRegion:SetPoint(Addon.FramePoint.TOPLEFT, self.scrollContentFrame, Addon.FramePoint.TOPLEFT, 0, 0)
+    cooldownTypeRegion:SetSize(self.scrollContentFrame:GetWidth(), heightIncrement * 4)
+    local cooldownTypeHeader = Addon:getSectionHeader(cooldownTypeRegion, "Cooldown", self.scrollContentFrame:GetWidth() - style.margin * 2)
+    cooldownTypeHeader:SetPoint(Addon.FramePoint.TOPLEFT, cooldownTypeRegion, Addon.FramePoint.TOPLEFT, style.margin, style.negMargin)
+    local leftCooldownTypeRegion = CreateFrame("Frame", nil, cooldownTypeRegion)
+    leftCooldownTypeRegion:SetPoint(Addon.FramePoint.TOPLEFT, cooldownTypeHeader, Addon.FramePoint.BOTTOMLEFT, 0, 0)
+    leftCooldownTypeRegion:SetSize(self.frame:GetWidth() / 2, heightIncrement * 4 - cooldownTypeHeader:GetHeight())
+    local rightCooldownTypeRegion = CreateFrame("Frame", nil, cooldownTypeRegion)
+    rightCooldownTypeRegion:SetPoint(Addon.FramePoint.TOPLEFT, leftCooldownTypeRegion, Addon.FramePoint.TOPRIGHT, 0, 0)
+    rightCooldownTypeRegion:SetSize(self.frame:GetWidth() / 2, heightIncrement * 4 - cooldownTypeHeader:GetHeight())
+    local cooldownTypeFrame, setCooldownTypeOption = Addon:createDropdown(leftCooldownTypeRegion, "Type", nil, {
+        width = 175,
+        selectedValue = item.itemType
+    })
+    setCooldownTypeOption(
+            Addon.ItemType,
+            function(value, text)
+                if value == Addon.ItemType.SPELL then
+                    spellRegion:Show()
+                    auraRegion:Hide()
+                    itemRegion:Hide()
+                elseif value == Addon.ItemType.AURA then
+                    spellRegion:Hide()
+                    auraRegion:Show()
+                    itemRegion:Hide()
+                elseif value == Addon.ItemType.ITEM then
+                    spellRegion:Hide()
+                    auraRegion:Hide()
+                    itemRegion:Show()
+                end
+            end
+    )
+    cooldownTypeFrame:SetPoint(Addon.FramePoint.TOPLEFT, leftCooldownTypeRegion, Addon.FramePoint.TOPLEFT, style.margin, style.negMargin)
+
+    spellRegion:SetPoint(Addon.FramePoint.TOPLEFT, cooldownTypeRegion, Addon.FramePoint.BOTTOMLEFT, 0, 0)
     spellRegion:SetSize(self.scrollContentFrame:GetWidth(), heightIncrement * 6)
-    local spellHeader = Addon:getSectionHeader(self.scrollContentFrame, "Spell Information", self.scrollContentFrame:GetWidth() - style.margin * 2)
+    local spellHeader = Addon:getSectionHeader(spellRegion, "Spell Options", self.scrollContentFrame:GetWidth() - style.margin * 2)
     spellHeader:SetPoint(Addon.FramePoint.TOPLEFT, spellRegion, Addon.FramePoint.TOPLEFT, style.margin, style.negMargin)
     local leftSpellRegion = CreateFrame("Frame", nil, spellRegion)
     leftSpellRegion:SetPoint(Addon.FramePoint.TOPLEFT, spellHeader, Addon.FramePoint.BOTTOMLEFT, 0, 0)
@@ -268,21 +308,12 @@ function PropertiesPanel:setItemPropertiesPanel(item, itemBtn)
     local rightSpellRegion = CreateFrame("Frame", nil, spellRegion)
     rightSpellRegion:SetPoint(Addon.FramePoint.TOPLEFT, leftSpellRegion, Addon.FramePoint.TOPRIGHT, 0, 0)
     rightSpellRegion:SetSize(self.frame:GetWidth() / 2, heightIncrement * 6 - spellHeader:GetHeight())
-
-    -- Warning text (hidden by default)
-    local warningText = spellRegion:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    warningText:SetText("The selected spell has not been enabled in Blizzard's CDM. Due to API limitations, please move the spell to Essential Cooldowns, Utility Cooldowns, or Tracked Buffs in Blizzard's CDM to enable tracking in BaroCM. It is recommended to do this for all spells while using BaroCM.")
-    warningText:SetTextColor(1, 0.1, 0.1, 1)
-    warningText:SetWidth(spellRegion:GetWidth() - style.margin * 3)
-    warningText:SetJustifyH("LEFT")
-    warningText:Hide()
-
     local spellFrame, setSpellOption = Addon:createDropdown(leftSpellRegion, "Spell", nil, {
         width = 175,
         selectedValue = item.spellName
     })
     setSpellOption(
-            Addon.inst.itemBindingWatcher:getItemOptions(),
+            Addon.inst.cdmItemCollection:getOptions(Addon.CdmType.SPELL),
             function(value, text)
                 if item.boundCdmItem then
                     item.boundCdmItem:unbind()
@@ -291,30 +322,115 @@ function PropertiesPanel:setItemPropertiesPanel(item, itemBtn)
                     item.boundTrinket:unbind()
                 end
 
-                if value.itemType == Addon.ItemType.CDM then
-                    item:setSpellId(value.spellId)
-                    itemBtn:setName(value.spellName)
-                    itemBtn:refreshIcon()
-                    local cdmItem = Addon.inst.cdmItemCollection:getCdmItem(value.spellId)
-                    if cdmItem.isActive == false then
-                        warningText:Show()
-                    else
-                        warningText:Hide()
-                    end
-                elseif value.itemType == Addon.ItemType.TRINKET then
-                    item:setSlotId(value.slotId)
-                    itemBtn:setName(value.slotName)
-                    itemBtn:refreshIcon()
-                    warningText:Hide()
+                item:setSpell(value.cooldownId, value.spellId, Addon.ItemType.SPELL)
+                itemBtn:setName(value.spellName)
+                itemBtn:refreshIcon()
+                local cdmItem = Addon.inst.cdmItemCollection:getCdmItem(value.spellId)
+                if cdmItem.isActive == false then
+                    spellWarningText:Show()
+                else
+                    spellWarningText:Hide()
                 end
             end
     )
     spellFrame:SetPoint(Addon.FramePoint.TOPLEFT, leftSpellRegion, Addon.FramePoint.TOPLEFT, style.margin, style.negMargin)
+    spellWarningText:SetText("The selected spell has not been enabled in Blizzard's CDM. Due to API limitations, please move the spell to Essential Cooldowns, Utility Cooldowns, or Tracked Buffs in Blizzard's CDM to enable tracking in BaroCM. It is recommended to do this for all spells while using BaroCM.")
+    spellWarningText:SetTextColor(1, 0.1, 0.1, 1)
+    spellWarningText:SetWidth(spellRegion:GetWidth() - style.margin * 3)
+    spellWarningText:SetJustifyH("LEFT")
+    spellWarningText:SetPoint(Addon.FramePoint.TOPLEFT, spellFrame, Addon.FramePoint.BOTTOMLEFT, 0, style.negMargin)
+    spellWarningText:Hide()
+    spellRegion:Hide()
 
-    warningText:SetPoint(Addon.FramePoint.TOPLEFT, spellFrame, Addon.FramePoint.BOTTOMLEFT, 0, style.negMargin)
-    if item.boundCdmItem and item.boundCdmItem.isActive == false then
-        warningText:Show()
+    auraRegion:SetPoint(Addon.FramePoint.TOPLEFT, cooldownTypeRegion, Addon.FramePoint.BOTTOMLEFT, 0, 0)
+    auraRegion:SetSize(self.scrollContentFrame:GetWidth(), heightIncrement * 6)
+    local auraHeader = Addon:getSectionHeader(auraRegion, "Aura Options", self.scrollContentFrame:GetWidth() - style.margin * 2)
+    auraHeader:SetPoint(Addon.FramePoint.TOPLEFT, auraRegion, Addon.FramePoint.TOPLEFT, style.margin, style.negMargin)
+    local leftAuraRegion = CreateFrame("Frame", nil, auraRegion)
+    leftAuraRegion:SetPoint(Addon.FramePoint.TOPLEFT, auraHeader, Addon.FramePoint.BOTTOMLEFT, 0, 0)
+    leftAuraRegion:SetSize(self.frame:GetWidth() / 2, heightIncrement * 6 - auraHeader:GetHeight())
+    local rightAuraRegion = CreateFrame("Frame", nil, auraRegion)
+    rightAuraRegion:SetPoint(Addon.FramePoint.TOPLEFT, leftAuraRegion, Addon.FramePoint.TOPRIGHT, 0, 0)
+    rightAuraRegion:SetSize(self.frame:GetWidth() / 2, heightIncrement * 6 - auraHeader:GetHeight())
+    local auraFrame, setAuraOption = Addon:createDropdown(leftAuraRegion, "Spell", nil, {
+        width = 175,
+        selectedValue = item.spellName
+    })
+    setAuraOption(
+            Addon.inst.cdmItemCollection:getOptions(Addon.CdmType.AURA),
+            function(value, text)
+                if item.boundCdmItem then
+                    item.boundCdmItem:unbind()
+                end
+                if item.boundTrinket then
+                    item.boundTrinket:unbind()
+                end
+
+                item:setSpell(value.cooldownId, value.spellId, Addon.ItemType.AURA)
+                itemBtn:setName(value.spellName)
+                itemBtn:refreshIcon()
+                local cdmItem = Addon.inst.cdmItemCollection:getCdmItem(value.spellId)
+                if cdmItem.isActive == false then
+                    spellWarningText:Show()
+                else
+                    spellWarningText:Hide()
+                end
+            end
+    )
+    auraFrame:SetPoint(Addon.FramePoint.TOPLEFT, leftAuraRegion, Addon.FramePoint.TOPLEFT, style.margin, style.negMargin)
+    auraWarningText:SetText("The selected spell has not been enabled in Blizzard's CDM. Due to API limitations, please move the spell to Essential Cooldowns, Utility Cooldowns, or Tracked Buffs in Blizzard's CDM to enable tracking in BaroCM. It is recommended to do this for all spells while using BaroCM.")
+    auraWarningText:SetTextColor(1, 0.1, 0.1, 1)
+    auraWarningText:SetWidth(auraRegion:GetWidth() - style.margin * 3)
+    auraWarningText:SetJustifyH("LEFT")
+    auraWarningText:SetPoint(Addon.FramePoint.TOPLEFT, auraFrame, Addon.FramePoint.BOTTOMLEFT, 0, style.negMargin)
+    auraWarningText:Hide()
+    auraRegion:Hide()
+
+    itemRegion:SetPoint(Addon.FramePoint.TOPLEFT, cooldownTypeRegion, Addon.FramePoint.BOTTOMLEFT, 0, 0)
+    itemRegion:SetSize(self.scrollContentFrame:GetWidth(), heightIncrement * 6)
+    local itemHeader = Addon:getSectionHeader(itemRegion, "Item Options", self.scrollContentFrame:GetWidth() - style.margin * 2)
+    itemHeader:SetPoint(Addon.FramePoint.TOPLEFT, itemRegion, Addon.FramePoint.TOPLEFT, style.margin, style.negMargin)
+    local leftItemRegion = CreateFrame("Frame", nil, itemRegion)
+    leftItemRegion:SetPoint(Addon.FramePoint.TOPLEFT, itemHeader, Addon.FramePoint.BOTTOMLEFT, 0, 0)
+    leftItemRegion:SetSize(self.frame:GetWidth() / 2, heightIncrement * 6 - itemHeader:GetHeight())
+    local rightItemRegion = CreateFrame("Frame", nil, itemRegion)
+    rightItemRegion:SetPoint(Addon.FramePoint.TOPLEFT, leftItemRegion, Addon.FramePoint.TOPRIGHT, 0, 0)
+    rightItemRegion:SetSize(self.frame:GetWidth() / 2, heightIncrement * 6 - itemHeader:GetHeight())
+    local itemFrame, setItemOption = Addon:createDropdown(leftItemRegion, "Spell", nil, {
+        width = 175,
+        selectedValue = item.spellName
+    })
+    setItemOption(
+            Addon.inst.trinketCollection:getOptions(),
+            function(value, text)
+                if item.boundCdmItem then
+                    item.boundCdmItem:unbind()
+                end
+                if item.boundTrinket then
+                    item.boundTrinket:unbind()
+                end
+
+                item:setSlotId(value.slotId)
+                itemBtn:setName(value.slotName)
+                itemBtn:refreshIcon()
+                spellWarningText:Hide()
+                auraWarningText:Hide()
+            end
+    )
+    itemFrame:SetPoint(Addon.FramePoint.TOPLEFT, leftItemRegion, Addon.FramePoint.TOPLEFT, style.margin, style.negMargin)
+    itemRegion:Hide()
+
+    if item.itemType == Addon.ItemType.SPELL then
+        spellRegion:Show()
+    elseif item.itemType == Addon.ItemType.AURA then
+        auraRegion:Show()
+    elseif item.itemType == Addon.ItemType.ITEM then
+        itemRegion:Show()
     end
+end
+
+function PropertiesPanel:getItemTypeFrame()
+
 end
 
 function PropertiesPanel:clearScrollContent()

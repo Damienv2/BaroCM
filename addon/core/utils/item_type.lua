@@ -2,15 +2,18 @@
 local Addon = select(2, ...)
 
 ---@alias ItemTypeValue
----| "CDM"
----| "TRINKET"
+---| "SPELL"
+---| "AURA"
+---| "ITEM"
 
 ---@class ItemType
----@field CDM ItemTypeValue
----@field TRINKET ItemTypeValue
+---@field SPELL ItemTypeValue
+---@field AURA ItemTypeValue
+---@field ITEM ItemTypeValue
 local ItemType = {
-    CDM = "CDM",
-    TRINKET = "TRINKET",
+    SPELL = "SPELL",
+    AURA = "AURA",
+    ITEM = "ITEM",
 }
 
 Addon.ItemType = ItemType

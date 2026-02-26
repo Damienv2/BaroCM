@@ -31,6 +31,7 @@ local Addon = select(2, ...)
 ---@field StyleVariables StyleVariables
 ---@field TitlePanel TitlePanel
 ---@field Widgets Widgets
+---@field CdmType CdmType
 ---@field ColGrowth ColGrowth
 ---@field FramePoint FramePoint
 ---@field GrowthPrio GrowthPrio

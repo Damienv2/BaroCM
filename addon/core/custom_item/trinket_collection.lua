@@ -39,5 +39,22 @@ function TrinketCollection.default()
     return self
 end
 
+function TrinketCollection:getOptions()
+    local options = {}
+
+    local trinket1 = Addon.inst.trinketCollection.trinket1
+    table.insert(options, {
+        value = trinket1,
+        text = trinket1.slotName
+    })
+    local trinket2 = Addon.inst.trinketCollection.trinket2
+    table.insert(options, {
+        value = trinket2,
+        text = trinket2.slotName
+    })
+
+    return options
+end
+
 Addon.TrinketCollection = TrinketCollection
 return TrinketCollection

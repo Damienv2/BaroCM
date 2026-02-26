@@ -54,9 +54,9 @@ end
 
 ---@return string
 function ItemBtn:getIconPath()
-    if self.item.itemType == Addon.ItemType.CDM and self.item.spellId then
+    if (self.item.itemType == Addon.ItemType.SPELL or self.item.itemType == Addon.ItemType.AURA) and self.item.spellId then
         return C_Spell.GetSpellTexture(self.item.spellId)
-    elseif self.item.itemType == Addon.ItemType.TRINKET and self.item.itemId then
+    elseif self.item.itemType == Addon.ItemType.ITEM and self.item.itemId then
         return C_Item.GetItemIconByID(self.item.itemId)
     end
     return "Interface/Icons/INV_Misc_QuestionMark"

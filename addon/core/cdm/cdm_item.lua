@@ -4,6 +4,7 @@ local Addon = select(2, ...)
 ---@class CdmItem
 ---@field itemType ItemType
 ---@field cooldownId number
+---@field cdmType CdmType
 ---@field spellId number
 ---@field spellName string
 ---@field isActive boolean
@@ -17,12 +18,14 @@ local CdmItem = {}
 CdmItem.__index = CdmItem
 
 ---@param cooldownId number
+---@param cdmType CdmType
 ---@return CdmItem
-function CdmItem.default(cooldownId)
+function CdmItem.default(cooldownId, cdmType)
     local self = setmetatable({}, CdmItem)
     self.itemType = Addon.ItemType.CDM
     local cooldownInfo = C_CooldownViewer.GetCooldownViewerCooldownInfo(cooldownId)
     self.cooldownId = cooldownInfo.cooldownID
+    self.cdmType = cdmType
     self.spellId = cooldownInfo.spellID
     self.spellName = C_Spell.GetSpellInfo(self.spellId).name
 

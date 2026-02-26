@@ -21,13 +21,13 @@ function CdmItemCollection.default()
         attempts = attempts + 1
 
         local essentialCooldownIds = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.Essential, true)
-        self:loadCooldownIds(essentialCooldownIds)
+        self:loadCooldownIds(essentialCooldownIds, Addon.CdmType.SPELL)
         local utilityCooldownIds = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.Utility, true)
-        self:loadCooldownIds(utilityCooldownIds)
+        self:loadCooldownIds(utilityCooldownIds, Addon.CdmType.SPELL)
         local trackedBuffCooldownIds = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.TrackedBuff, true)
-        self:loadCooldownIds(trackedBuffCooldownIds)
-        local trackedBarCooldownIds = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.TrackedBar, true)
-        self:loadCooldownIds(trackedBarCooldownIds)
+        self:loadCooldownIds(trackedBuffCooldownIds, Addon.CdmType.AURA)
+        --local trackedBarCooldownIds = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.TrackedBar, true)
+        --self:loadCooldownIds(trackedBarCooldownIds, Addon.CdmType.SPELL)
 
         if next(self.cdmItems) ~= nil then
             ticker:Cancel()
@@ -47,9 +47,10 @@ function CdmItemCollection.default()
 end
 
 ---@param cooldownIds table
-function CdmItemCollection:loadCooldownIds(cooldownIds)
+---@param cdmType CdmType
+function CdmItemCollection:loadCooldownIds(cooldownIds, cdmType)
     for _, cooldownId in pairs(cooldownIds) do
-        local cdmItem = Addon.CdmItem.default(cooldownId)
+        local cdmItem = Addon.CdmItem.default(cooldownId, cdmType)
         self.cdmItems[cooldownId] = cdmItem
     end
 end
@@ -86,14 +87,6 @@ function CdmItemCollection:refreshActiveBindings()
     end
 end
 
-function CdmItemCollection:printActive()
-    for _, cdmItem in pairs (self.cdmItems) do
-        if cdmItem.isActive == true then
-            print(tostring(cdmItem.spellName) .. " - " .. tostring(cdmItem.spellId))
-        end
-    end
-end
-
 function CdmItemCollection:startPolling(intervalSeconds)
     if self.poller then return end
     self.poller = CreateFrame("Frame")
@@ -118,17 +111,15 @@ function CdmItemCollection:stopPolling()
     self.poller = nil
 end
 
-function CdmItemCollection:getCdmItemsEnum()
+---@param cdmType CdmType
+function CdmItemCollection:getOptions(cdmType)
     local options = {}
-    local seen = {}
 
     for _, cdmItem in pairs(self.cdmItems) do
-        local name = cdmItem.spellName
-        if name and not seen[name] then
-            seen[name] = true
+        if cdmItem.cdmType == cdmType then
             table.insert(options, {
                 value = cdmItem,   -- keep callback behavior: value.spellId
-                text = name,       -- must be string for dropdown label
+                text = cdmItem.spellName .. " - Spell ID: " .. cdmItem.spellId,       -- must be string for dropdown label
             })
         end
     end

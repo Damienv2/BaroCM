@@ -21,7 +21,7 @@ function ItemBindingWatcher:watch()
         for _, item in pairs(group.itemGrid.itemCollection.items) do
             -- Loop through all CDM Items seeing if any match the groups items
             for _, cdmItem in pairs(Addon.inst.cdmItemCollection.cdmItems) do
-                if tostring(item.spellId) == tostring(cdmItem.spellId) and select(1, GetSpecializationInfo(GetSpecialization())) == item.specId then
+                if tostring(item.cooldownId) == tostring(cdmItem.cooldownId) and select(1, GetSpecializationInfo(GetSpecialization())) == item.specId then
                     item:bindCdmItem(cdmItem)
                     cdmItem:bind(item)
                 end

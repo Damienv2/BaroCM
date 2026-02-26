@@ -13,6 +13,7 @@ core/utils/row_growth.lua
 core/utils/col_growth.lua
 core/utils/growth_prio.lua
 core/utils/item_type.lua
+core/utils/cdm_type.lua
 core/utils/utils.lua
 
 core/ui/style_variables.lua
