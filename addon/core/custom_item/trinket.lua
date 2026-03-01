@@ -144,5 +144,15 @@ function Trinket:refreshItemRatio()
     self.itemRatio = math.min(widthRatio, heightRatio)
 end
 
+function Trinket:show()
+    self.activeFrame:Show()
+    self.activeFrame.overlay:Show()
+end
+
+function Trinket:hide()
+    self.activeFrame:Hide()
+    self.activeFrame.overlay:Hide()
+end
+
 Addon.Trinket = Trinket
 return Trinket

@@ -76,14 +76,31 @@ end
 
 function Item:show()
     if not self.itemFrame then return end
+    if self:shouldDisplay() == false then return end
 
     self.itemFrame:show()
+
+    if self.boundCdmItem ~= nil then
+        self.boundCdmItem:show()
+    end
+
+    if self.boundTrinket ~= nil then
+        self.boundTrinket:show()
+    end
 end
 
 function Item:hide()
     if not self.itemFrame then return end
 
     self.itemFrame:hide()
+
+    if self.boundCdmItem ~= nil then
+        self.boundCdmItem:hide()
+    end
+
+    if self.boundTrinket ~= nil then
+        self.boundTrinket:hide()
+    end
 end
 
 function Item:delete()
@@ -206,7 +223,12 @@ function Item:getLabel()
 end
 
 function Item:shouldDisplay()
-    return (self.boundCdmItem and self.boundCdmItem.isActive == true) or (self.boundTrinket and self.boundTrinket.itemId ~= nil)
+    return
+        (
+            (self.boundCdmItem and self.boundCdmItem.isActive == true)
+            or (self.boundTrinket and self.boundTrinket.itemId ~= nil)
+        )
+        and Addon.inst.isCinematicPlaying == false
 end
 
 Addon.Item = Item

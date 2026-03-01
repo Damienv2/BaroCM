@@ -9,11 +9,17 @@ f:RegisterEvent("PLAYER_LOGIN")
 f:RegisterEvent("COOLDOWN_VIEWER_DATA_LOADED")
 f:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 
+f:RegisterEvent("CINEMATIC_START")
+f:RegisterEvent("CINEMATIC_STOP")
+f:RegisterEvent("PLAY_MOVIE")
+f:RegisterEvent("STOP_MOVIE")
+
 f:SetScript("OnEvent", function(_, event, arg1)
     if event == "ADDON_LOADED" and arg1 == addonName then
         BaroCooldownManagerDB = BaroCooldownManagerDB or {}
         Addon.db = BaroCooldownManagerDB
         Addon.inst = {}
+        Addon.inst.isCinematicPlaying = false
     elseif event == "COOLDOWN_VIEWER_DATA_LOADED" then
         if Addon.db.serializedGroupCollection == nil then
             Addon.inst.groupCollection = Addon.GroupCollection.default()
@@ -45,6 +51,12 @@ f:SetScript("OnEvent", function(_, event, arg1)
         Addon.inst.cdmItemCollection = Addon.CdmItemCollection.default()
         Addon.inst.cdmItemCollection:startPolling(0.0)
         Addon.inst.itemBindingWatcher:startPolling(0.0)
+    elseif event == "CINEMATIC_START" or event == "PLAY_MOVIE" then
+        Addon.inst.isCinematicPlaying = true
+        Addon.inst.groupCollection:hide()
+    elseif event == "CINEMATIC_STOP" or event == "STOP_MOVIE" then
+        Addon.inst.isCinematicPlaying = false
+        Addon.inst.groupCollection:show()
     end
 end)
 
@@ -77,6 +89,8 @@ SlashCmdList.BAROCOOLDOWNMANAGER = function(msg)
         BaroCooldownManagerDB = {}
         Addon.db = BaroCooldownManagerDB
         Addon.inst.groupCollection = Addon.GroupCollection.default()
+    elseif msg == "tst" then
+        Addon.inst.groupCollection:hide()
     end
 
 end

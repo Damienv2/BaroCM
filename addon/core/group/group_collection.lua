@@ -67,5 +67,17 @@ function GroupCollection:save()
     Addon.db.serializedGroupCollection = Addon.inst.groupCollection:serialize()
 end
 
+function GroupCollection:show()
+    for _, group in pairs(self.groups) do
+        group:show()
+    end
+end
+
+function GroupCollection:hide()
+    for _, group in pairs(self.groups) do
+        group:hide()
+    end
+end
+
 Addon.GroupCollection = GroupCollection
 return GroupCollection

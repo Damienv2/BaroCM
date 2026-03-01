@@ -11,6 +11,7 @@ local Addon = select(2, ...)
 ---@field cdmItemCollection CdmItemCollection
 ---@field itemBindingWatcher ItemBindingWatcher
 ---@field trinketCollection TrinketCollection
+---@field isCinematicPlaying boolean
 
 ---@class Addon
 ---@field CdmItem CdmItem

@@ -141,5 +141,13 @@ function CdmItem:refreshItemRatio()
     self.itemRatio = math.min(widthRatio, heightRatio)
 end
 
+function CdmItem:show()
+    self.activeFrame:Show()
+end
+
+function CdmItem:hide()
+    self.activeFrame:Hide()
+end
+
 Addon.CdmItem = CdmItem
 return CdmItem
