@@ -39,6 +39,7 @@ end
 function Trinket:createActiveFrame()
     local f = CreateFrame("Frame", nil, UIParent)
     f:SetSize(self.initialActiveFrameWidth, self.initialActiveFrameHeight)
+    f:SetFrameStrata("BACKGROUND")
 
     -- ARTWORK: icon
     local icon = f:CreateTexture(nil, "ARTWORK")

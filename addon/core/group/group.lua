@@ -272,6 +272,8 @@ function Group:setShowBackground(showBackground)
     if self.showBackground ~= showBackground then
         self.groupFrame:showBackground(showBackground)
         self.showBackground = showBackground
+
+        Addon.inst.groupCollection:save()
     end
 end
 
@@ -279,8 +281,9 @@ end
 function Group:setIsLocked(isLocked)
     if self.isLocked ~= isLocked then
         self.isLocked = isLocked
-
         self.groupFrame:handleIsLockedChange()
+
+        Addon.inst.groupCollection:save()
     end
 end
 

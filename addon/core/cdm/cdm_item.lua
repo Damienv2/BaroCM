@@ -46,6 +46,7 @@ end
 function CdmItem:setActiveBinding(frame, viewerName)
     self.isActive = true
     self.activeFrame = frame
+    self.activeFrame:SetFrameStrata("BACKGROUND")
     self.activeViewerName = viewerName
     if self.initialActiveFrameWidth == nil or self.initialActiveFrameHeight == nil then
         self.initialActiveFrameWidth = self.activeFrame:GetWidth()
@@ -97,6 +98,7 @@ function CdmItem:pairToItem()
     local regions = { self.activeFrame:GetRegions() }
     local borderTex = regions[3]
     borderTex:SetScale(self.itemRatio)
+    borderTex:Hide()
 
     -- Adjust the glow scale
     if self.activeFrame.SpellActivationAlert then
