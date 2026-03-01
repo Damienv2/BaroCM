@@ -37,7 +37,7 @@ end
 
 ---@return Frame
 function Trinket:createActiveFrame()
-    local f = CreateFrame("Frame", name, parent)
+    local f = CreateFrame("Frame", nil, UIParent)
     f:SetSize(self.initialActiveFrameWidth, self.initialActiveFrameHeight)
 
     -- ARTWORK: icon
@@ -96,9 +96,10 @@ function Trinket:pairToItem()
     self.activeFrame.cooldown:SetScale(self.itemRatio)
 
     self:refreshRuntimeState()
-    if self.activeFrame:IsVisible() == false then
-        self.activeFrame:Show()
-    end
+    self:show()
+    --if self.activeFrame:IsVisible() == false then
+    --
+    --end
 end
 
 function Trinket:refreshRuntimeState()
@@ -142,6 +143,10 @@ function Trinket:refreshItemRatio()
     end
 
     self.itemRatio = math.min(widthRatio, heightRatio)
+end
+
+function Trinket:refreshItemId()
+    self.itemId = GetInventoryItemID("player", self.slotId)
 end
 
 function Trinket:show()

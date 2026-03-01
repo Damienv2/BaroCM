@@ -56,17 +56,16 @@ function CdmItemCollection:loadCooldownIds(cooldownIds, cdmType)
 end
 
 function CdmItemCollection:refreshActiveBindings()
-    local VIEWERS = {
-        EssentialCooldownViewer,
-        UtilityCooldownViewer,
-        BuffIconCooldownViewer,
-        --BuffBarCooldownViewer,
-    }
-
     -- clear old runtime bindings
     for _, cdmItem in pairs(self.cdmItems) do
         cdmItem:clearActiveBinding()
     end
+
+    local VIEWERS = {
+        EssentialCooldownViewer,
+        UtilityCooldownViewer,
+        BuffIconCooldownViewer,
+    }
 
     for _, viewer in ipairs(VIEWERS) do
         assert(viewer and viewer.itemFramePool and viewer.itemFramePool.EnumerateActive, "Viewer/pool missing")
