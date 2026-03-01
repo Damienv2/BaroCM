@@ -26,8 +26,8 @@ function CdmItemCollection.default()
         self:loadCooldownIds(utilityCooldownIds, Addon.CdmType.SPELL)
         local trackedBuffCooldownIds = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.TrackedBuff, true)
         self:loadCooldownIds(trackedBuffCooldownIds, Addon.CdmType.AURA)
-        --local trackedBarCooldownIds = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.TrackedBar, true)
-        --self:loadCooldownIds(trackedBarCooldownIds, Addon.CdmType.SPELL)
+        local trackedBarCooldownIds = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.TrackedBar, true)
+        self:loadCooldownIds(trackedBarCooldownIds, nil)
 
         if next(self.cdmItems) ~= nil then
             ticker:Cancel()

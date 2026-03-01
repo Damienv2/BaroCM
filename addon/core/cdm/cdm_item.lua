@@ -64,6 +64,10 @@ function CdmItem:setActiveBinding(frame, viewerName)
 end
 
 function CdmItem:clearActiveBinding()
+    -- TODO This causes glow to break
+    --if self.activeFrame then
+    --    self.activeFrame:Hide()
+    --end
     self.isActive = false
     self.activeFrame = nil
     self.activeViewerName = nil
@@ -78,10 +82,10 @@ function CdmItem:bind(item)
 end
 
 function CdmItem:unbind()
-    if self.activeFrame == nil then return end
-
     self.item = nil
-    self.activeFrame:Hide()
+    if self.activeFrame then
+        self.activeFrame:Hide()
+    end
 end
 
 function CdmItem:pairToItem()
@@ -128,7 +132,7 @@ function CdmItem:pairToItem()
     cooldownFrame:SetScale(self.itemRatio)
 
     if self.activeFrame:IsVisible() == false then
-        self.activeFrame:Show()
+        self:show()
     end
 end
 
