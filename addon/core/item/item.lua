@@ -209,7 +209,6 @@ function Item:bindTrinket(trinket)
 end
 
 function Item:unbind()
-    self:delete()
     self.boundCdmItem = nil
     self.boundTrinket = nil
 end
