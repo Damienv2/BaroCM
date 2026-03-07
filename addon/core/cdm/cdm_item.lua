@@ -162,7 +162,7 @@ function CdmItem:shouldDisplay()
     shouldDisplay = shouldDisplay and self.isActive
 
     if self.cdmType == Addon.CdmType.BUFF_BAR or self.cdmType == Addon.CdmType.BUFF_ICON then
-        shouldDisplay = shouldDisplay and (C_UnitAuras.GetPlayerAuraBySpellID(self.spellId) ~= nil or self.item.hideIfMissing == false)
+        shouldDisplay = shouldDisplay and (self.activeFrame:GetAuraSpellInstanceID() ~= nil or self.item.hideIfMissing == false)
     end
 
     return shouldDisplay
