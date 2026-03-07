@@ -18,6 +18,8 @@ function ItemFrame.hidden(parentItem)
     self.frame.parentItem = parentItem
     local size = self.parentItem.parentItemCollection.parentGroup.itemGrid.itemSize
     self.frame:SetSize(size,  size)
+    self.frame:SetFrameStrata(self.parentItem.parentItemCollection.parentGroup.groupFrame.frame:GetFrameStrata())
+    self.frame:SetFrameLevel(self.parentItem.parentItemCollection.parentGroup.groupFrame.frame:GetFrameLevel() + 1)
 
     return self
 end

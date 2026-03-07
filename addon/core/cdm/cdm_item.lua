@@ -46,7 +46,6 @@ end
 function CdmItem:setActiveBinding(frame, viewerName)
     self.isActive = true
     self.activeFrame = frame
-    self.activeFrame:SetFrameStrata("BACKGROUND")
     self.activeViewerName = viewerName
     if self.initialActiveFrameWidth == nil or self.initialActiveFrameHeight == nil then
         self.initialActiveFrameWidth = self.activeFrame:GetWidth()
@@ -127,6 +126,9 @@ function CdmItem:pairToItem()
         local chargeCountFrame = self.activeFrame:GetChargeCountFrame()
         chargeCountFrame:SetScale(self.itemRatio)
     end
+
+    self.activeFrame:SetFrameStrata(self.item.itemFrame.frame:GetFrameStrata())
+    self.activeFrame:SetFrameLevel(self.item.itemFrame.frame:GetFrameLevel() + 1)
 
     local cooldownFrame = self.activeFrame:GetCooldownFrame()
     cooldownFrame:SetScale(self.itemRatio)

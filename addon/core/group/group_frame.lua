@@ -28,6 +28,9 @@ function GroupFrame:initialize()
         frame.bg = frame:CreateTexture(nil, "BACKGROUND")
         frame.bg:SetAllPoints()
         frame.bg:SetColorTexture(0, 0, 0, 0.35)
+
+        self.frame:SetFrameStrata("BACKGROUND")
+        self.frame:SetFrameLevel(0)
     end
 
     if self.parentGroup.isLocked == false then
