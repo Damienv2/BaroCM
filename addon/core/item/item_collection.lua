@@ -99,7 +99,7 @@ end
 function ItemCollection:refreshItemPosition()
     local activeCount = 0
     for _, item in ipairs(self.items) do
-        if item:shouldDisplay() then
+        if item:shouldDisplay() == true then
             activeCount = activeCount + 1
         else
             item:hide()
@@ -108,7 +108,7 @@ function ItemCollection:refreshItemPosition()
 
     local rowIdx, colIdx = 0, 0
     for _, item in pairs(self.items) do
-        if item:shouldDisplay() then
+        if item:shouldDisplay() == true then
             -- Hide the Item Frame if there is not enough room in the group
             if rowIdx >= self.parentGroup.itemGrid.maxRows or colIdx >= self.parentGroup.itemGrid.maxCols then
                 item:hide()
