@@ -160,5 +160,9 @@ function Trinket:hide()
     self.activeFrame.overlay:Hide()
 end
 
+function Trinket:shouldDisplay()
+    return self.itemId ~= nil
+end
+
 Addon.Trinket = Trinket
 return Trinket

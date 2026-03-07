@@ -21,13 +21,13 @@ function CdmItemCollection.default()
         attempts = attempts + 1
 
         local essentialCooldownIds = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.Essential, true)
-        self:loadCooldownIds(essentialCooldownIds, Addon.CdmType.SPELL)
+        self:loadCooldownIds(essentialCooldownIds, Addon.CdmType.ESSENTIAL)
         local utilityCooldownIds = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.Utility, true)
-        self:loadCooldownIds(utilityCooldownIds, Addon.CdmType.SPELL)
+        self:loadCooldownIds(utilityCooldownIds, Addon.CdmType.UTILITY)
         local trackedBuffCooldownIds = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.TrackedBuff, true)
-        self:loadCooldownIds(trackedBuffCooldownIds, Addon.CdmType.AURA)
+        self:loadCooldownIds(trackedBuffCooldownIds, Addon.CdmType.BUFF_ICON)
         local trackedBarCooldownIds = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.TrackedBar, true)
-        self:loadCooldownIds(trackedBarCooldownIds, nil)
+        self:loadCooldownIds(trackedBarCooldownIds, Addon.CdmType.BUFF_BAR)
 
         if next(self.cdmItems) ~= nil then
             ticker:Cancel()
@@ -110,12 +110,12 @@ function CdmItemCollection:stopPolling()
     self.poller = nil
 end
 
----@param cdmType CdmType
-function CdmItemCollection:getOptions(cdmType)
+---@param itemType ItemType
+function CdmItemCollection:getOptions(itemType)
     local options = {}
 
     for _, cdmItem in pairs(self.cdmItems) do
-        if cdmItem.cdmType == cdmType then
+        if Addon.CdmType:isValidItemType(cdmItem.cdmType, itemType) then
             table.insert(options, {
                 value = cdmItem,   -- keep callback behavior: value.spellId
                 text = cdmItem.spellName .. " - Spell ID: " .. cdmItem.spellId,       -- must be string for dropdown label

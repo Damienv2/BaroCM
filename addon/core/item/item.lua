@@ -10,6 +10,7 @@ local Addon = select(2, ...)
 ---@field cooldownId number
 ---@field spellId number
 ---@field spellName string
+---@field hideIfMissing boolean
 ---@field boundCdmItem CdmItem
 ---@field slotId number
 ---@field itemId number
@@ -30,6 +31,7 @@ function Item.default(parentItemCollection)
     self.cooldownId = nil
     self.spellId = nil
     self.spellName = nil
+    self.hideIfMissing = true
     self.boundCdmItem = nil
 
     self.slotId = nil
@@ -43,6 +45,8 @@ end
 ---@param parentItemCollection ItemCollection
 ---@return Item
 function Item.deserialize(serializedItem, parentItemCollection)
+    --if serializedItem.specId ~= select(1, GetSpecializationInfo(GetSpecialization())) then return nil end
+
     local self = setmetatable({}, Item)
     self.id = serializedItem.id
     self.specId = serializedItem.specId
@@ -52,6 +56,7 @@ function Item.deserialize(serializedItem, parentItemCollection)
     self.cooldownId = serializedItem.cooldownId
     self.spellId = serializedItem.spellId
     self.spellName = serializedItem.spellName
+    self.hideIfMissing = (serializedItem.hideIfMissing == nil) and true or serializedItem.hideIfMissing
     self.boundCdmItem = nil
     self.slotId = serializedItem.slotId
     self.itemId = serializedItem.itemId
@@ -69,6 +74,7 @@ function Item:serialize()
         cooldownId = self.cooldownId,
         spellId = self.spellId,
         spellName = self.spellName,
+        hideIfMissing = self.hideIfMissing,
         slotId = self.slotId,
         itemId = self.itemId,
     }
@@ -157,6 +163,12 @@ function Item:setParentItemCollection(parentItemCollection)
     Addon.inst.groupCollection:save()
 end
 
+function Item:setHideIfMissing(hideIfMissing)
+    self.hideIfMissing = hideIfMissing
+
+    Addon.inst.groupCollection:save()
+end
+
 ---@param cdmItem CdmItem
 function Item:bindCdmItem(cdmItem)
     if cdmItem == nil then return false end
@@ -224,9 +236,10 @@ end
 function Item:shouldDisplay()
     return
         (
-            (self.boundCdmItem and self.boundCdmItem.isActive == true)
-            or (self.boundTrinket and self.boundTrinket.itemId ~= nil)
+            (self.boundCdmItem ~= nil and self.boundCdmItem:shouldDisplay() == true)
+            or (self.boundTrinket ~= nil and self.boundTrinket:shouldDisplay() == true)
         )
+        and self.specId == select(1, GetSpecializationInfo(GetSpecialization()))
         and Addon.inst.isCinematicPlaying == false
 end
 

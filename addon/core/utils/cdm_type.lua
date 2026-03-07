@@ -2,28 +2,32 @@
 local Addon = select(2, ...)
 
 ---@alias CdmTypeValue
----| "SPELL"
----| "AURA"
+---| "ESSENTIAL"
+---| "UTILITY"
+---| "BUFF_ICON"
+---| "BUFF_BAR"
 
 ---@class CdmType
----@field SPELL CdmTypeValue
----@field AURA CdmTypeValue
+---@field ESSENTIAL CdmTypeValue
+---@field UTILITY CdmTypeValue
+---@field BUFF_ICON CdmTypeValue
+---@field BUFF_BAR CdmTypeValue
 local CdmType = {
-    SPELL = "SPELL",
-    AURA = "AURA",
+    ESSENTIAL = "ESSENTIAL",
+    UTILITY = "UTILITY",
+    BUFF_ICON = "BUFF_ICON",
+    BUFF_BAR = "BUFF_BAR",
 }
 
----@param itemType ItemTypeValue|nil
----@return CdmTypeValue|nil
-function CdmType.fromItemType(itemType)
-    if itemType == Addon.ItemType.SPELL then
-        return CdmType.SPELL
-    end
-    if itemType == Addon.ItemType.AURA then
-        return CdmType.AURA
-    end
+function CdmType:isValidItemType(cdmType, itemType)
+    local validItemTypeByCdmType = {
+        [CdmType.ESSENTIAL] = Addon.ItemType.SPELL,
+        [CdmType.UTILITY] = Addon.ItemType.SPELL,
+        [CdmType.BUFF_ICON] = Addon.ItemType.AURA,
+        [CdmType.BUFF_BAR] = Addon.ItemType.AURA,
+    }
 
-    return nil
+    return validItemTypeByCdmType[cdmType] == itemType
 end
 
 Addon.CdmType = CdmType

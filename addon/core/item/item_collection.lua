@@ -28,7 +28,10 @@ function ItemCollection.deserialize(serializedItemCollection, parentGroup)
     self.items = {}
     local items = serializedItemCollection.items or {}
     for _, serializedItem in pairs(items) do
-        table.insert(self.items, Addon.Item.deserialize(serializedItem, self))
+        local item = Addon.Item.deserialize(serializedItem, self)
+        if item ~= nil then
+            table.insert(self.items, item)
+        end
     end
     self:refreshItemPosition()
 
@@ -98,6 +101,8 @@ function ItemCollection:refreshItemPosition()
     for _, item in ipairs(self.items) do
         if item:shouldDisplay() then
             activeCount = activeCount + 1
+        else
+            item:hide()
         end
     end
 

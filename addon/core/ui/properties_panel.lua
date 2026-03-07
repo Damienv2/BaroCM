@@ -313,7 +313,7 @@ function PropertiesPanel:setItemPropertiesPanel(item, itemBtn)
         selectedValue = item.spellName
     })
     setSpellOption(
-            Addon.inst.cdmItemCollection:getOptions(Addon.CdmType.SPELL),
+            Addon.inst.cdmItemCollection:getOptions(Addon.ItemType.SPELL),
             function(value, text)
                 if item.boundCdmItem then
                     item.boundCdmItem:unbind()
@@ -357,7 +357,7 @@ function PropertiesPanel:setItemPropertiesPanel(item, itemBtn)
         selectedValue = item.spellName
     })
     setAuraOption(
-            Addon.inst.cdmItemCollection:getOptions(Addon.CdmType.AURA),
+            Addon.inst.cdmItemCollection:getOptions(Addon.ItemType.AURA),
             function(value, text)
                 if item.boundCdmItem then
                     item.boundCdmItem:unbind()
@@ -377,6 +377,11 @@ function PropertiesPanel:setItemPropertiesPanel(item, itemBtn)
                 end
             end
     )
+    local hideIfMissingFrame = Addon.Widgets:createCheckbox(rightAuraRegion, "Hide if Missing", {
+        checked = item.hideIfMissing,
+        onChange = function(v) item:setHideIfMissing(v) end
+    })
+    hideIfMissingFrame:SetPoint(Addon.FramePoint.TOPLEFT, rightAuraRegion, Addon.FramePoint.TOPLEFT, style.negMargin, style.negMargin)
     auraFrame:SetPoint(Addon.FramePoint.TOPLEFT, leftAuraRegion, Addon.FramePoint.TOPLEFT, style.margin, style.negMargin)
     auraWarningText:SetText("The selected spell has not been enabled in Blizzard's CDM. Due to API limitations, please move the spell to Essential Cooldowns, Utility Cooldowns, or Tracked Buffs in Blizzard's CDM to enable tracking in BaroCM. It is recommended to do this for all spells while using BaroCM.")
     auraWarningText:SetTextColor(1, 0.1, 0.1, 1)

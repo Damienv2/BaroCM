@@ -130,10 +130,6 @@ function CdmItem:pairToItem()
 
     local cooldownFrame = self.activeFrame:GetCooldownFrame()
     cooldownFrame:SetScale(self.itemRatio)
-
-    if self.activeFrame:IsVisible() == false then
-        self:show()
-    end
 end
 
 function CdmItem:refreshItemRatio()
@@ -148,11 +144,28 @@ function CdmItem:refreshItemRatio()
 end
 
 function CdmItem:show()
+    if self.activeFrame == nil then return end
+
     self.activeFrame:Show()
 end
 
 function CdmItem:hide()
+    if self.activeFrame == nil then return end
+
     self.activeFrame:Hide()
+end
+
+---@return boolean
+function CdmItem:shouldDisplay()
+    local shouldDisplay = true
+
+    shouldDisplay = shouldDisplay and self.isActive
+
+    if self.cdmType == Addon.CdmType.BUFF_BAR or self.cdmType == Addon.CdmType.BUFF_ICON then
+        shouldDisplay = shouldDisplay and (C_UnitAuras.GetPlayerAuraBySpellID(self.spellId) ~= nil or self.item.hideIfMissing == false)
+    end
+
+    return shouldDisplay
 end
 
 Addon.CdmItem = CdmItem
