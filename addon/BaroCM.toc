@@ -16,6 +16,12 @@ core/utils/item_type.lua
 core/utils/cdm_type.lua
 core/utils/utils.lua
 
+core/progress_bar/progress_bar_type.lua
+core/progress_bar/progress_bar_power_type.lua
+core/progress_bar/progress_bar_frame.lua
+core/progress_bar/progress_bar.lua
+core/progress_bar/progress_bar_collection.lua
+
 core/ui/style_variables.lua
 core/ui/widgets.lua
 core/ui/group_btn.lua

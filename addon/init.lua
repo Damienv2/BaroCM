@@ -90,7 +90,8 @@ SlashCmdList.BAROCOOLDOWNMANAGER = function(msg)
         Addon.db = BaroCooldownManagerDB
         Addon.inst.groupCollection = Addon.GroupCollection.default()
     elseif msg == "tst" then
-        Addon.inst.groupCollection:hide()
+        local tstBar = Addon.ProgressBar.default(nil)
+        tstBar:setProgressBarPowerType(Addon.ProgressBarPowerType.COMBO_POINTS)
     end
 
 end

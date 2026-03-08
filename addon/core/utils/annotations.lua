@@ -24,6 +24,11 @@ local Addon = select(2, ...)
 ---@field Item Item
 ---@field ItemCollection ItemCollection
 ---@field ItemFrame ItemFrame
+---@field ProgressBar ProgressBar
+---@field ProgressBarCollection ProgressBarCollection
+---@field ProgressBarFrame ProgressBarFrame
+---@field ProgressBarPowerType ProgressBarPowerType
+---@field ProgressBarType ProgressBarType
 ---@field GroupBtn GroupBtn
 ---@field ItemBtn ItemBtn
 ---@field NavigatorPanel NavigatorPanel
