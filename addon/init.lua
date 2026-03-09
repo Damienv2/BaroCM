@@ -12,10 +12,15 @@ f:SetScript("OnEvent", function(_, event, arg1)
         Addon.db = BaroCooldownManagerDB
         Addon.inst = {}
         if Addon.db.serializedRoot == nil then
-            Addon.inst.root = Addon.Node:new(nil)
+            Addon.inst.root = Addon.Collection:default()
+            Addon.inst.root:setName("Root")
         else
-            Addon.inst.root = Addon.Node:deserialize(Addon.db.serializedRoot, nil)
+            --TODO make parent optional that defaults to nil
+            Addon.inst.root = Addon.Node.deserialize(Addon.db.serializedRoot, nil)
         end
+        Addon.EventBus:register("SAVE", function()
+            Addon.db.serializedRoot = Addon.inst.root:serialize()
+        end)
     end
 end)
 
@@ -48,9 +53,14 @@ SlashCmdList.BAROCOOLDOWNMANAGER = function(msg)
         BaroCooldownManagerDB = {}
         Addon.db = BaroCooldownManagerDB
         Addon.inst.root:delete()
-        Addon.inst.root = Addon.Node:new(nil)
-    elseif msg == "tst" then
-
+        Addon.inst.root = Addon.Collection:default()
+    elseif msg == "tst1" then
+        local newCollection = Addon.Collection:default()
+        Addon.inst.root:appendChild(newCollection)
+        local newGroup = Addon.Group:default()
+        newCollection:appendChild(newGroup)
+        newGroup:setOffsetX(100)
+        DevTools_Dump(Addon.inst.root)
     end
 
 end

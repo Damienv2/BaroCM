@@ -2,17 +2,14 @@
 local Addon = select(2, ...)
 
 ---@class Cooldown : GroupMemberNode
----@field items table
 Cooldown = setmetatable({}, { __index = Addon.GroupMemberNode }) -- inherit from Node
 Cooldown.__index = Cooldown
 Cooldown.type = Addon.NodeType.COOLDOWN
 
----@param parent Node?
----@param rank number?
 ---@return Cooldown
-function Cooldown:new(parent, rank)
+function Cooldown:default()
     ---@type Cooldown
-    local obj = Addon.GroupMemberNode.new(self, parent, rank) -- parent constructor
+    local obj = Addon.GroupMemberNode.default(self) -- parent constructor
     obj.name = "New Cooldown"
 
     return obj

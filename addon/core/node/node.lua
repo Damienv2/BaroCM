@@ -5,7 +5,7 @@ local Addon = select(2, ...)
 ---@field parent Node?
 ---@field id string
 ---@field name string
----@field rank number
+---@field rank number?
 ---@field children Node[]?
 ---@field frame Frame
 ---@field type NodeTypeValue
@@ -15,76 +15,75 @@ Node.__index = Node
 ---@type NodeTypeValue
 Node.type = Addon.NodeType.NODE
 
----@param parent Node?
----@param rank number?
 ---@return Node
-function Node:new(parent, rank)
-    if rank == nil then rank = 0 end
-    self:validateParent(parent)
-
+function Node:default()
     local obj = setmetatable({}, self)
-    obj.parent = parent
+    obj.parent = nil
     obj.id = self:_create_uuid4()
     obj.name = "New Node"
-    obj.rank = rank
+    obj.rank = nil
     obj.children = {}
-    local parentFrame = parent ~= nil and parent.frame or UIParent
-    obj.frame = CreateFrame("Frame", obj.id, parentFrame)
 
     return obj
 end
 
-function Node:deserialize(data, parent)
-    local class = Addon.NodeRegistry[data.type]
-    assert(class, "Unknown node type: " .. tostring(data.type))
-
-    local node = class:new(parent, data.rank or 0)
-    node.id = data.id or node.id
-    node.name = data.name or node.name
-    node.children = {}
-    node:fromData(data)
-
-    for _, childData in ipairs(data.children or {}) do
-        node.children[#node.children + 1] = Node.deserialize(childData, node)
-    end
-
-    table.sort(node.children, function(a, b) return a.rank < b.rank end)
-    return node
+---@return table
+function Node:serializeProps()
+    return {}
 end
 
+---@return table
 function Node:serialize()
-    local children = {}
-    for _, c in ipairs(self.children) do
-        children[#children + 1] = c:serialize()
+    local childrenDto = {}
+    for i, child in ipairs(self.children or {}) do
+        childrenDto[i] = child:serialize()
     end
 
-    local data = {
-        v = 1,
+    return {
         type = self.type,
         id = self.id,
         name = self.name,
         rank = self.rank,
-        children = children,
+        props = self:serializeProps(),
+        children = childrenDto,
     }
-
-    for k, v in pairs(self:toData()) do data[k] = v end
-    return data
-end
-
----@return table
-function Node:toData()
-    return {}
 end
 
 ---@param data table
-function Node:fromData(data)
+function Node:deserializeProps(data)
 
 end
 
-function Node:validateParent(parent)
+---@param data table
+---@param parent Node
+function Node.deserialize(data, parent)
+    local class = Addon.NodeType:getClass(data.type)
+    local node = class:default()
+
+    node.id = data.id
+    node.name = data.name
+    node.rank = data.rank
+    node.children = {}
+    node.parent = parent
+
+    if node.deserializeProps then
+        node:deserializeProps(data.props or {})
+    end
+
+    for _, childData in ipairs(data.children or {}) do
+        local child = Node.deserialize(childData, node)
+        table.insert(node.children, child)
+    end
+
+    return node
+end
+
+function Node:setParent(parent)
     if parent ~= nil then
         error("Node must have a NIL parent.")
     end
+    
+    self.parent = parent
 end
 
 ---@return string
@@ -96,21 +95,16 @@ function Node:_create_uuid4()
     end)
 end
 
-function Node:show()
-    for _, child in ipairs(self.children) do
-        child:show()
-    end
+function Node:setName(name)
+    self.name = name
+
+    Addon.EventBus:send("SAVE")
 end
 
-function Node:hide()
+function Node:setRank(rank)
+    self.rank = rank
 
-end
-
-function Node:hideCascade()
-    for _, child in ipairs(self.children) do
-        child:hide()
-        child:hideCascade()
-    end
+    Addon.EventBus:send("SAVE")
 end
 
 ---@return number
@@ -120,24 +114,37 @@ end
 
 ---@param node Node
 function Node:appendChild(node)
-    local childRank = self:getNextChildRank()
+    node:setParent(self)
+    node:setRank(self:getNextChildRank())
     table.insert(self.children, node)
-    node.rank = childRank
 
     local event = "APPEND_" .. node.type
     Addon.EventBus:send(event, node)
+    Addon.EventBus:send("SAVE")
 end
 
 function Node:moveChild(node, newRank)
     for _, child in ipairs(self.children) do
         if child.rank >= newRank and child.rank < node.rank then
-            child.rank = child.rank + 1
+            child:setRank(child.rank + 1)
             Addon.EventBus:send("RANK_CHANGE", child)
         end
     end
 
     node.rank = newRank
     Addon.EventBus:send("RANK_CHANGE", node)
+end
+
+function Node:isRoot()
+    return self.parent == nil
+end
+
+function Node:isFirstChild()
+    return self.rank == 0
+end
+
+function Node:isLastChild()
+    return self.rank == self.parent:getNextChildRank() - 1
 end
 
 function Node:beforeDelete()
@@ -152,31 +159,49 @@ function Node:delete()
         child:delete()
     end
 
-    local idxToDelete = nil
-    for idx, child in ipairs(self.parent.children) do
-        if child.id == self.id then
-            idxToDelete = idx
+    if self.parent ~= nil then
+        local idxToDelete = nil
+        for idx, child in ipairs(self.parent.children) do
+            if child.id == self.id then
+                idxToDelete = idx
+            end
         end
+        table.remove(self.parent.children, idxToDelete)
     end
-    table.remove(self.parent.children, idxToDelete)
 
     local event = "DELETE_" .. self.type
     Addon.EventBus:send(event, self)
 
-    for _, child in ipairs(self.parent.children) do
-        if child.rank > self.rank then
-            child.rank = child.rank - 1
-            Addon.EventBus:send("RANK_CHANGE", child)
+    if self.parent ~= nil then
+        for _, child in ipairs(self.parent.children) do
+            if child.rank > self.rank then
+                child:setRank(child.rank - 1)
+                Addon.EventBus:send("RANK_CHANGE", child)
+            end
         end
     end
 end
 
-function Node:isFirst()
-    return self.rank == 0
+function Node:show()
+
 end
 
-function Node:isLast()
-    return self.rank == self.parent:getNextChildRank() - 1
+function Node:showCascade()
+    for _, child in ipairs(self.children) do
+        child:show()
+        child:showCascade()
+    end
+end
+
+function Node:hide()
+
+end
+
+function Node:hideCascade()
+    for _, child in ipairs(self.children) do
+        child:hide()
+        child:hideCascade()
+    end
 end
 
 Addon.Node = Node

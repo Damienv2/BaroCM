@@ -2,27 +2,26 @@
 local Addon = select(2, ...)
 
 ---@class Collection : Node
----@field items table
 Collection = setmetatable({}, { __index = Addon.Node }) -- inherit from Node
 Collection.__index = Collection
 Collection.type = Addon.NodeType.COLLECTION
 
----@param parent Node?
----@param rank number?
 ---@return Collection
-function Collection:new(parent, rank)
+function Collection:default()
     ---@type Collection
-    local obj = Addon.Node.new(self, parent, rank) -- parent constructor
+    local obj = Addon.Node.default(self) -- parent constructor
     obj.name = "New Collection"
 
     return obj
 end
 
 ---@param parent Node
-function Collection:validateParent(parent)
+function Collection:setParent(parent)
     if parent.type ~= Addon.NodeType.NODE and parent.type ~= Addon.NodeType.COLLECTION then
         error("Collection must have a Node or Collection parent.")
     end
+    
+    self.parent = parent
 end
 
 Addon.Collection = Collection
