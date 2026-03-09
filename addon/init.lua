@@ -5,58 +5,17 @@ local Addon = select(2, ...)
 
 local f = CreateFrame("Frame")
 f:RegisterEvent("ADDON_LOADED")
-f:RegisterEvent("PLAYER_LOGIN")
-f:RegisterEvent("COOLDOWN_VIEWER_DATA_LOADED")
-f:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-
-f:RegisterEvent("CINEMATIC_START")
-f:RegisterEvent("CINEMATIC_STOP")
-f:RegisterEvent("PLAY_MOVIE")
-f:RegisterEvent("STOP_MOVIE")
 
 f:SetScript("OnEvent", function(_, event, arg1)
     if event == "ADDON_LOADED" and arg1 == addonName then
         BaroCooldownManagerDB = BaroCooldownManagerDB or {}
         Addon.db = BaroCooldownManagerDB
         Addon.inst = {}
-        Addon.inst.isCinematicPlaying = false
-    elseif event == "COOLDOWN_VIEWER_DATA_LOADED" then
-        if Addon.db.serializedGroupCollection == nil then
-            Addon.inst.groupCollection = Addon.GroupCollection.default()
+        if Addon.db.serializedRoot == nil then
+            Addon.inst.root = Addon.Node:new(nil)
         else
-            Addon.inst.groupCollection = Addon.GroupCollection.deserialize(Addon.db.serializedGroupCollection)
+            Addon.inst.root = Addon.Node:deserialize(Addon.db.serializedRoot, nil)
         end
-
-        Addon.inst.trinketCollection = Addon.TrinketCollection.default()
-
-        Addon.inst.cdmItemCollection = Addon.CdmItemCollection.default()
-        Addon.inst.cdmItemCollection:startPolling(0.0)
-
-        Addon.inst.itemBindingWatcher = Addon.ItemBindingWatcher.default()
-        Addon.inst.itemBindingWatcher:startPolling(0.0)
-
-        Addon.inst.optionsPanel = Addon.OptionsPanel.default()
-    elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
-        Addon.inst.cdmItemCollection:stopPolling()
-        Addon.inst.itemBindingWatcher:stopPolling()
-
-        for _, group in pairs(Addon.inst.groupCollection.groups) do
-            -- Loop through all items
-            for _, item in pairs(group.itemGrid.itemCollection.items) do
-                item:unbind()
-            end
-        end
-        Addon.inst.optionsPanel.navigatorPanel:refreshGroupBtns()
-
-        Addon.inst.cdmItemCollection = Addon.CdmItemCollection.default()
-        Addon.inst.cdmItemCollection:startPolling(0.0)
-        Addon.inst.itemBindingWatcher:startPolling(0.0)
-    elseif event == "CINEMATIC_START" or event == "PLAY_MOVIE" then
-        Addon.inst.isCinematicPlaying = true
-        Addon.inst.groupCollection:hide()
-    elseif event == "CINEMATIC_STOP" or event == "STOP_MOVIE" then
-        Addon.inst.isCinematicPlaying = false
-        Addon.inst.groupCollection:show()
     end
 end)
 
@@ -84,14 +43,14 @@ SlashCmdList.BAROCOOLDOWNMANAGER = function(msg)
     msg = (msg or ""):lower()
 
     if msg == "" then
-        Addon.inst.optionsPanel:toggleOptionsPanel()
+
     elseif msg == "cdb" then
         BaroCooldownManagerDB = {}
         Addon.db = BaroCooldownManagerDB
-        Addon.inst.groupCollection = Addon.GroupCollection.default()
+        Addon.inst.root:delete()
+        Addon.inst.root = Addon.Node:new(nil)
     elseif msg == "tst" then
-        local tstBar = Addon.ProgressBar.default(nil)
-        tstBar:setProgressBarPowerType(Addon.ProgressBarPowerType.COMBO_POINTS)
+
     end
 
 end

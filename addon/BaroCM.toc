@@ -6,45 +6,18 @@
 ## Version: 1.3.1
 ## SavedVariables: BaroCooldownManagerDB
 
-core/logging.lua
-core/utils/annotations.lua
+annotation.lua
 core/utils/frame_point.lua
-core/utils/row_growth.lua
-core/utils/col_growth.lua
-core/utils/growth_prio.lua
-core/utils/item_type.lua
-core/utils/cdm_type.lua
-core/utils/utils.lua
+core/utils/event_bus.lua
 
-core/progress_bar/progress_bar_type.lua
-core/progress_bar/progress_bar_power_type.lua
-core/progress_bar/progress_bar_frame.lua
-core/progress_bar/progress_bar.lua
-core/progress_bar/progress_bar_collection.lua
-
-core/ui/style_variables.lua
-core/ui/widgets.lua
-core/ui/group_btn.lua
-core/ui/item_btn.lua
-core/ui/navigator_panel.lua
-core/ui/properties_panel.lua
-core/ui/title_panel.lua
-core/ui/options_panel.lua
-
-core/item/item_frame.lua
-core/item/item.lua
-core/item/item_collection.lua
-
-core/group/group_frame.lua
-core/group/group.lua
-core/group/group_collection.lua
-
-core/custom_item/trinket.lua
-core/custom_item/trinket_collection.lua
-
-core/cdm/cdm_item.lua
-core/cdm/cdm_item_collection.lua
-
-core/item_binding_watcher.lua
+core/node/node_type.lua
+core/node/node.lua
+core/node/collection.lua
+core/node/collection_member_node/collection_member_node.lua
+core/node/collection_member_node/group.lua
+core/node/collection_member_node/prog_bar.lua
+core/node/collection_member_node/group_member_node/group_member_node.lua
+core/node/collection_member_node/group_member_node/cooldown.lua
+core/node/collection_member_node/group_member_node/item.lua
 
 init.lua
