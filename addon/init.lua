@@ -8,8 +8,8 @@ f:RegisterEvent("ADDON_LOADED")
 
 f:SetScript("OnEvent", function(_, event, arg1)
     if event == "ADDON_LOADED" and arg1 == addonName then
-        BaroCooldownManagerDB = BaroCooldownManagerDB or {}
-        Addon.db = BaroCooldownManagerDB
+        BaroCooldownManagerDB2 = BaroCooldownManagerDB2 or {}
+        Addon.db = BaroCooldownManagerDB2
         Addon.inst = {}
         if Addon.db.serializedRoot == nil then
             Addon.inst.root = Addon.Collection:default()
@@ -50,16 +50,18 @@ SlashCmdList.BAROCOOLDOWNMANAGER = function(msg)
     if msg == "" then
 
     elseif msg == "cdb" then
-        BaroCooldownManagerDB = {}
-        Addon.db = BaroCooldownManagerDB
+        BaroCooldownManagerDB2 = {}
+        Addon.db = BaroCooldownManagerDB2
         Addon.inst.root:delete()
         Addon.inst.root = Addon.Collection:default()
     elseif msg == "tst1" then
-        local newCollection = Addon.Collection:default()
-        Addon.inst.root:appendChild(newCollection)
         local newGroup = Addon.Group:default()
-        newCollection:appendChild(newGroup)
+        Addon.inst.root:appendChild(newGroup)
         newGroup:setOffsetX(100)
+        DevTools_Dump(Addon.inst.root)
+    elseif msg == "tst2" then
+        Addon.inst.root.children[1]:setIsLocked(true)
+    elseif msg == "p" then
         DevTools_Dump(Addon.inst.root)
     end
 
