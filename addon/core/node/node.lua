@@ -23,7 +23,9 @@ function Node:default()
     obj.name = "New Node"
     obj.rank = nil
     obj.children = {}
-    obj.frame = CreateFrame(obj.id .. "_frame", obj.id, UIParent)
+    obj.frame = CreateFrame("Frame", obj.id, UIParent)
+    obj.frame:SetPoint(Addon.FramePoint.CENTER, UIParent, Addon.FramePoint.CENTER, 0, 0)
+    obj.frame:SetSize(0, 0)
 
     return obj
 end
@@ -66,7 +68,10 @@ function Node.deserialize(data, parent)
     node.name = data.name
     node.rank = data.rank
     node.children = {}
-    node.frame = CreateFrame(data.id .. "_frame", data.id, parent.frame)
+    local frameParent = parent ~= nil and parent.frame or UIParent
+    node.frame = CreateFrame("Frame", data.id, frameParent)
+    node.frame:SetPoint(Addon.FramePoint.CENTER, UIParent, Addon.FramePoint.CENTER, 0, 0)
+    node.frame:SetSize(0, 0)
 
     if node.deserializeProps then
         node:deserializeProps(data.props or {})
@@ -75,6 +80,7 @@ function Node.deserialize(data, parent)
     for _, childData in ipairs(data.children or {}) do
         local child = Node.deserialize(childData, node)
         table.insert(node.children, child)
+        node:afterAppendChild(child)
     end
 
     return node

@@ -52,8 +52,10 @@ SlashCmdList.BAROCOOLDOWNMANAGER = function(msg)
     elseif msg == "cdb" then
         BaroCooldownManagerDB2 = {}
         Addon.db = BaroCooldownManagerDB2
-        Addon.inst.root:delete()
-        Addon.inst.root = Addon.Collection:default()
+        if Addon.inst.root then
+            Addon.inst.root:delete()
+            Addon.inst.root = Addon.Collection:default()
+        end
     elseif msg == "tst1" then
         local newGroup = Addon.Group:default()
         Addon.inst.root:appendChild(newGroup)

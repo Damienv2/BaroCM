@@ -33,6 +33,8 @@ function Group:default()
     obj:initMovable()
     obj:initBackground()
 
+    obj:registerMovableFrame(obj.frame)
+
     obj.name = "New Group"
     obj.childrenGrid = {
         maxRows = 1,
@@ -43,6 +45,7 @@ function Group:default()
         childSpacing = 3,
         childSize = 48,
     }
+    obj:refreshFrameSize()
 
     return obj
 end
@@ -71,11 +74,11 @@ function Group:afterAppendChild(node)
 
 end
 
-function Group:refreshBgFrameSize()
+function Group:refreshFrameSize()
     local grid = self.childrenGrid
     local w = (grid.childSize * grid.maxCols) + (grid.childSpacing * (grid.maxCols - 1))
     local h = (grid.childSize * grid.maxRows) + (grid.childSpacing * (grid.maxRows - 1))
-    self.bgFrame:SetSize(w, h)
+    self.frame:SetSize(w, h)
 end
 
 Addon.Group = Group

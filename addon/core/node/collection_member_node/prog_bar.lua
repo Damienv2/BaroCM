@@ -24,7 +24,7 @@ function ProgBar:default()
 end
 
 ---@return table
-function Group:serializeProps()
+function ProgBar:serializeProps()
     local movable = self:serializeMovableProps()
     return {
         pos = movable.pos,
@@ -32,7 +32,7 @@ function Group:serializeProps()
 end
 
 ---@param data table
-function Group:deserializeProps(data)
+function ProgBar:deserializeProps(data)
     self:deserializeMovableProps(data)
 end
 

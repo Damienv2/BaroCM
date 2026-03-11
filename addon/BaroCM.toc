@@ -9,6 +9,7 @@
 annotation.lua
 core/utils/frame_point.lua
 core/utils/event_bus.lua
+core/utils/debug.lua
 core/utils/grid/row_growth.lua
 core/utils/grid/col_growth.lua
 core/utils/grid/growth_prio.lua

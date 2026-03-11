@@ -36,7 +36,8 @@ end
 
 ---@return Frame
 function BackgroundMixin:_initBgFrame()
-    local bgFrame = CreateFrame(self.id .. "_bgFrame", nil, self.frame)
+    local bgFrame = CreateFrame("Frame", nil, self.frame)
+    bgFrame:SetAllPoints()
 
     bgFrame.bg = bgFrame:CreateTexture(nil, "BACKGROUND")
     bgFrame.bg:SetAllPoints()
@@ -46,8 +47,8 @@ function BackgroundMixin:_initBgFrame()
         bgFrame:Hide()
     end
 
-    bgFrame.bg:SetFrameStrata("BACKGROUND")
-    bgFrame.bg:SetFrameLevel(0)
+    bgFrame:SetFrameStrata("BACKGROUND")
+    bgFrame:SetFrameLevel(0)
 
     return bgFrame
 end

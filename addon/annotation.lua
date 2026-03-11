@@ -10,6 +10,7 @@ local Addon = select(2, ...)
 ---@class Addon
 ---@field FramePoint FramePoint
 ---@field EventBus EventBus
+---@field Debug Debug
 ---@field RowGrowth RowGrowth
 ---@field ColGrowth ColGrowth
 ---@field GrowthPrio GrowthPrio
