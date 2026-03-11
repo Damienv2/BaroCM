@@ -2,7 +2,7 @@
 local Addon = select(2, ...)
 
 ---@class GroupMemberNode : Node
-GroupMemberNode = setmetatable({}, { __index = Addon.Node }) -- inherit from Node
+local GroupMemberNode = setmetatable({}, { __index = Addon.Node }) -- inherit from Node
 GroupMemberNode.__index = GroupMemberNode
 GroupMemberNode.type = Addon.NodeType.GROUP_MEMBER_NODE
 

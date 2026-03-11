@@ -13,6 +13,7 @@ local Addon = select(2, ...)
 ---@field RowGrowth RowGrowth
 ---@field ColGrowth ColGrowth
 ---@field GrowthPrio GrowthPrio
+---@field BackgroundMixin BackgroundMixin
 ---@field MovableMixin MovableMixin
 ---@field NodeType NodeType
 ---@field Node Node

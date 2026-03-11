@@ -2,7 +2,7 @@
 local Addon = select(2, ...)
 
 ---@class Cooldown : GroupMemberNode
-Cooldown = setmetatable({}, { __index = Addon.GroupMemberNode }) -- inherit from Node
+local Cooldown = setmetatable({}, { __index = Addon.GroupMemberNode }) -- inherit from Node
 Cooldown.__index = Cooldown
 Cooldown.type = Addon.NodeType.COOLDOWN
 

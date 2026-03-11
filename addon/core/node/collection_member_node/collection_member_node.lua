@@ -2,7 +2,7 @@
 local Addon = select(2, ...)
 
 ---@class CollectionMemberNode : Node
-CollectionMemberNode = setmetatable({}, { __index = Addon.Node }) -- inherit from Node
+local CollectionMemberNode = setmetatable({}, { __index = Addon.Node }) -- inherit from Node
 CollectionMemberNode.__index = CollectionMemberNode
 CollectionMemberNode.type = Addon.NodeType.COLLECTION_MEMBER_NODE
 

@@ -13,6 +13,7 @@ core/utils/grid/row_growth.lua
 core/utils/grid/col_growth.lua
 core/utils/grid/growth_prio.lua
 
+core/component/background_mixin.lua
 core/component/movable_mixin.lua
 
 core/node/node_type.lua

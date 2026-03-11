@@ -7,83 +7,75 @@ local Addon = select(2, ...)
 ---@field rowGrowth RowGrowthValue
 ---@field colGrowth ColGrowthValue
 ---@field growthPrio GrowthPrioValue
----@field spacing number
+---@field childSpacing number
 ---@field childSize number
 
----@class Group : CollectionMemberNode
+---@class GroupBase : CollectionMemberNode
 ---@field childrenGrid ChildrenGrid
-Group = setmetatable({}, { __index = Addon.CollectionMemberNode }) -- inherit from Node
+---@field showBackground boolean
+---@field bgFrame Frame
+local Group = setmetatable({}, { __index = Addon.CollectionMemberNode })
 Group.__index = Group
 Group.type = Addon.NodeType.GROUP
+
+---@alias Group GroupBase | MovableMixin | BackgroundMixin
+---@type Group
+local Group = Group
 
 ---@return Group
 function Group:default()
     ---@type Group
-    local obj = Addon.CollectionMemberNode.default(self) -- parent constructor
-    obj.name = "New Group"
+    local obj = Addon.CollectionMemberNode.default(self)
 
+    Mixin(obj, Addon.MovableMixin)
+    Mixin(obj, Addon.BackgroundMixin)
+
+    obj:initMovable()
+    obj:initBackground()
+
+    obj.name = "New Group"
     obj.childrenGrid = {
         maxRows = 1,
         maxCols = 6,
         rowGrowth = Addon.RowGrowth.RIGHT,
         colGrowth = Addon.ColGrowth.DOWN,
         growthPrio = Addon.GrowthPrio.ROW_FIRST,
-        spacing = 3,
+        childSpacing = 3,
         childSize = 48,
     }
-
-    Addon.MovableMixin:apply(obj)
-    ---@cast obj Group
-    ---@cast obj MovableMixin
 
     return obj
 end
 
 ---@return table
 function Group:serializeProps()
+    local movable = self:serializeMovableProps()
+    local background = self:serializeBackgroundProps()
     return {
-        childrenGrid = {
-            maxRows = self.childrenGrid.maxRows,
-            maxCols = self.childrenGrid.maxCols,
-            rowGrowth = self.childrenGrid.rowGrowth,
-            colGrowth = self.childrenGrid.colGrowth,
-            growthPrio = self.childrenGrid.growthPrio,
-            spacing = self.childrenGrid.spacing,
-            childSize = self.childrenGrid.childSize
-        },
-        pos = {
-            point = self.pos.point,
-            relativeTo = self.pos.relativeTo,
-            relativePoint = self.pos.relativePoint,
-            offsetX = self.pos.offsetX,
-            offsetY = self.pos.offsetY
-        },
-        isLocked = self.isLocked
+        childrenGrid = self.childrenGrid,
+        pos = movable.pos,
+        showBackground = background.showBackground
     }
 end
 
 ---@param data table
 function Group:deserializeProps(data)
-    local childrenGrid = data.childrenGrid
-    self.childrenGrid = {
-        maxRows = childrenGrid.maxRows,
-        maxCols = childrenGrid.maxCols,
-        rowGrowth = childrenGrid.rowGrowth,
-        colGrowth = childrenGrid.colGrowth,
-        growthPrio = childrenGrid.growthPrio,
-        spacing = childrenGrid.spacing,
-        childSize = childrenGrid.childSize,
-    }
+    self:deserializeMovableProps(data)
+    self:deserializeBackgroundProps(data)
+    self.childrenGrid = data.childrenGrid
+    self.showBackground = data.showBackground
+end
 
-    local pos = data.pos
-    self.pos = {
-        point = pos.point,
-        relativeTo = pos.relativeTo,
-        relativePoint = pos.relativePoint,
-        offsetX = pos.offsetX,
-        offsetY = pos.offsetY,
-    }
-    self.isLocked = data.isLocked
+---@param node Node
+function Group:afterAppendChild(node)
+
+end
+
+function Group:refreshBgFrameSize()
+    local grid = self.childrenGrid
+    local w = (grid.childSize * grid.maxCols) + (grid.childSpacing * (grid.maxCols - 1))
+    local h = (grid.childSize * grid.maxRows) + (grid.childSpacing * (grid.maxRows - 1))
+    self.bgFrame:SetSize(w, h)
 end
 
 Addon.Group = Group

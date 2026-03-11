@@ -6,10 +6,10 @@ local Addon = select(2, ...)
 ---@field id string
 ---@field name string
 ---@field rank number?
----@field children Node[]?
+---@field children Node[]
 ---@field frame Frame
 ---@field type NodeTypeValue
-Node = {}
+local Node = {}
 Node.__index = Node
 
 ---@type NodeTypeValue
@@ -23,6 +23,7 @@ function Node:default()
     obj.name = "New Node"
     obj.rank = nil
     obj.children = {}
+    obj.frame = CreateFrame(obj.id .. "_frame", obj.id, UIParent)
 
     return obj
 end
@@ -60,11 +61,12 @@ function Node.deserialize(data, parent)
     local class = Addon.NodeType:getClass(data.type)
     local node = class:default()
 
+    node.parent = parent
     node.id = data.id
     node.name = data.name
     node.rank = data.rank
     node.children = {}
-    node.parent = parent
+    node.frame = CreateFrame(data.id .. "_frame", data.id, parent.frame)
 
     if node.deserializeProps then
         node:deserializeProps(data.props or {})
@@ -78,11 +80,13 @@ function Node.deserialize(data, parent)
     return node
 end
 
+---@param parent Node
 function Node:setParent(parent)
     if parent ~= nil then
         error("Node must have a NIL parent.")
     end
-    
+
+    self.frame = parent.frame
     self.parent = parent
 end
 
@@ -101,6 +105,7 @@ function Node:setName(name)
     Addon.EventBus:send("SAVE")
 end
 
+---@param rank number
 function Node:setRank(rank)
     self.rank = rank
 
@@ -121,8 +126,17 @@ function Node:appendChild(node)
     local event = "APPEND_" .. node.type
     Addon.EventBus:send(event, node)
     Addon.EventBus:send("SAVE")
+
+    self:afterAppendChild(node)
 end
 
+---@param node Node
+function Node:afterAppendChild(node)
+
+end
+
+---@param node Node
+---@param newRank number
 function Node:moveChild(node, newRank)
     for _, child in ipairs(self.children) do
         if child.rank >= newRank and child.rank < node.rank then
@@ -135,15 +149,19 @@ function Node:moveChild(node, newRank)
     Addon.EventBus:send("RANK_CHANGE", node)
 end
 
+---@return boolean
 function Node:isRoot()
     return self.parent == nil
 end
 
+---@return boolean
 function Node:isFirstChild()
     return self.rank == 0
 end
 
+---@return boolean
 function Node:isLastChild()
+    if not self.parent then return true end
     return self.rank == self.parent:getNextChildRank() - 1
 end
 
@@ -183,7 +201,7 @@ function Node:delete()
 end
 
 function Node:show()
-
+    self.frame:Show()
 end
 
 function Node:showCascade()
@@ -194,7 +212,7 @@ function Node:showCascade()
 end
 
 function Node:hide()
-
+    self.frame:Hide()
 end
 
 function Node:hideCascade()
