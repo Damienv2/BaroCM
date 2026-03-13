@@ -2,6 +2,7 @@
 local Addon = select(2, ...)
 
 ---@class CollectionBase : Node
+---@field orientation CollectionOrientation
 local Collection = setmetatable({}, { __index = Addon.Node }) -- inherit from Node
 Collection.__index = Collection
 Collection.type = Addon.NodeType.COLLECTION
@@ -23,9 +24,8 @@ function Collection:default()
 
     obj:registerMovableFrame(obj.frame)
 
-    Addon.Debug:addDebugFrame(self.frame)
-
     obj.name = "New Collection"
+    obj.orientation = Addon.CollectionOrientation.VERTICAL
 
     return obj
 end
@@ -46,6 +46,7 @@ function Collection:serializeProps()
     return {
         pos = movable.pos,
         showBackground = background.showBackground,
+        orientation = self.orientation,
     }
 end
 
@@ -53,6 +54,7 @@ end
 function Collection:deserializeProps(data)
     self:deserializeMovableProps(data)
     self:deserializeBackgroundProps(data)
+    self.orientation = data.orientation
 end
 
 function Collection:wrapChildren()
@@ -85,6 +87,13 @@ function Collection:afterAppendChild(node)
         collection:wrapChildren()
         print("C2")
     end)
+end
+
+---@param orientation CollectionOrientation
+function Collection:setOrientation(orientation)
+    self.orientation = orientation
+
+    Addon.EventBus.send("SAVE")
 end
 
 Addon.Collection = Collection
