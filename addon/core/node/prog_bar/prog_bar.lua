@@ -1,22 +1,20 @@
 ---@type Addon
 local Addon = select(2, ...)
 
----@class ProgBarBase : CollectionMemberNode
+---@class ProgBar : CollectionMemberNode
+---@field movable MovableMixin
 local ProgBar = setmetatable({}, { __index = Addon.CollectionMemberNode }) -- inherit from Node
 ProgBar.__index = ProgBar
 ProgBar.type = Addon.NodeType.PROG_BAR
-
----@alias ProgBar ProgBarBase | MovableMixin
----@type ProgBar
-local ProgBar = ProgBar
 
 ---@return ProgBar
 function ProgBar:default()
     ---@type ProgBar
     local obj = Addon.CollectionMemberNode.default(self)
 
-    Mixin(obj, Addon.MovableMixin)
-    obj:initMovable()
+    Addon.Mixin:embed(obj, "movable", Addon.MovableMixin)
+
+    obj.movable:registerMovableFrame(obj.frame)
 
     obj.name = "New ProgBar"
 
@@ -34,6 +32,12 @@ end
 ---@param data table
 function ProgBar:deserializeProps(data)
     self:deserializeMovableProps(data)
+end
+
+function ProgBar:afterSetParent()
+    if self.parent.movable then
+        self.movable:setIsLocked(true)
+    end
 end
 
 Addon.ProgBar = ProgBar

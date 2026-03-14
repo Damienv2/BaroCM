@@ -10,21 +10,24 @@ annotation.lua
 core/utils/frame_point.lua
 core/utils/event_bus.lua
 core/utils/debug.lua
-core/utils/grid/row_growth.lua
-core/utils/grid/col_growth.lua
+core/utils/mixin.lua
+core/utils/orientation.lua
 core/utils/grid/growth_prio.lua
+core/utils/grid/horizontal_alignment.lua
+core/utils/grid/vertical_alignment.lua
 
 core/component/background_mixin.lua
+core/component/dynamic_sizing_mixin.lua
 core/component/movable_mixin.lua
 
 core/node/node_type.lua
 core/node/node.lua
-core/node/collection.lua
-core/node/collection_member_node/collection_member_node.lua
-core/node/collection_member_node/group.lua
-core/node/collection_member_node/prog_bar.lua
-core/node/collection_member_node/group_member_node/group_member_node.lua
-core/node/collection_member_node/group_member_node/cooldown.lua
-core/node/collection_member_node/group_member_node/item.lua
+core/node/collection/collection.lua
+core/node/collection/collection_member_node.lua
+core/node/group/group.lua
+core/node/group/group_member_node.lua
+core/node/group/cooldown.lua
+core/node/group/item.lua
+core/node/prog_bar/prog_bar.lua
 
 init.lua

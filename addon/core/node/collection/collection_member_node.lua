@@ -16,12 +16,10 @@ function CollectionMemberNode:default()
 end
 
 ---@param parent Node
-function CollectionMemberNode:setParent(parent)
+function CollectionMemberNode:validateParent(parent)
     if parent.type ~= Addon.NodeType.COLLECTION then
         error("Collection Member Node must have a Collection parent.")
     end
-    
-    self.parent = parent
 end
 
 Addon.CollectionMemberNode = CollectionMemberNode

@@ -63,19 +63,20 @@ function Node.deserialize(data, parent)
     local class = Addon.NodeType:getClass(data.type)
     local node = class:default()
 
-    node.parent = parent
+    node.parent = nil
     node.id = data.id
     node.name = data.name
     node.rank = data.rank
     node.children = {}
-    local frameParent = parent ~= nil and parent.frame or UIParent
-    node.frame = CreateFrame("Frame", data.id, frameParent)
+    node.frame = CreateFrame("Frame", data.id, UIParent)
     node.frame:SetPoint(Addon.FramePoint.CENTER, UIParent, Addon.FramePoint.CENTER, 0, 0)
     node.frame:SetSize(0, 0)
 
     if node.deserializeProps then
         node:deserializeProps(data.props or {})
     end
+
+    node:setParent(parent)
 
     for _, childData in ipairs(data.children or {}) do
         local child = Node.deserialize(childData, node)
@@ -88,12 +89,26 @@ end
 
 ---@param parent Node
 function Node:setParent(parent)
+    self:validateParent(parent)
+
+    if parent ~= nil then
+        self.frame:SetParent(parent.frame)
+        self.frame:ClearAllPoints()
+        self.frame:SetPoint(Addon.FramePoint.CENTER, parent.frame, Addon.FramePoint.CENTER, 0, 0)
+    end
+    self.parent = parent
+
+    self:afterSetParent()
+end
+
+function Node:validateParent(parent)
     if parent ~= nil then
         error("Node must have a NIL parent.")
     end
+end
 
-    self.frame = parent.frame
-    self.parent = parent
+function Node:afterSetParent()
+
 end
 
 ---@return string

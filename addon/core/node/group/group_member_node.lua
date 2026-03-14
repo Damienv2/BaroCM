@@ -16,12 +16,10 @@ function GroupMemberNode:default()
 end
 
 ---@param parent Node
-function GroupMemberNode:setParent(parent)
+function GroupMemberNode:validateParent(parent)
     if parent.type ~= Addon.NodeType.GROUP then
         error("Group Member Node must have a Group parent.")
     end
-    
-    self.parent = parent
 end
 
 Addon.GroupMemberNode = GroupMemberNode

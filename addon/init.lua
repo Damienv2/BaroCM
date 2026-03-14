@@ -55,14 +55,13 @@ SlashCmdList.BAROCOOLDOWNMANAGER = function(msg)
         if Addon.inst.root then
             Addon.inst.root:delete()
             Addon.inst.root = Addon.Collection:default()
+            Addon.db.serializedRoot = Addon.inst.root:serialize()
         end
     elseif msg == "tst1" then
         local newGroup = Addon.Group:default()
         Addon.inst.root:appendChild(newGroup)
-        newGroup:setOffsetX(100)
-        DevTools_Dump(Addon.inst.root)
     elseif msg == "tst2" then
-        Addon.inst.root.children[1]:setIsLocked(true)
+        print(Addon.inst.root.children[1].background:setShowBackground(not Addon.inst.root.children[1].background.showBackground))
     elseif msg == "p" then
         DevTools_Dump(Addon.inst.root)
     end

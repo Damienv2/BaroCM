@@ -19,6 +19,7 @@ local Addon = select(2, ...)
 ---@field NodeType NodeType
 ---@field Node Node
 ---@field Collection Collection
+---@field CollectionOrientation CollectionOrientation
 ---@field CollectionMemberNode CollectionMemberNode
 ---@field Group Group
 ---@field ProgBar ProgBar
