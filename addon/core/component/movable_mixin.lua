@@ -8,6 +8,7 @@ local Addon = select(2, ...)
 ---@field offsetX number
 ---@field offsetY number
 ---@field isLocked boolean
+---@field frame Frame
 local MovableMixin = {}
 
 ---@param parent Node
@@ -19,6 +20,9 @@ function MovableMixin:init(parent)
     self.offsetX = 0
     self.offsetY = 0
     self.isLocked = false
+    self.frame = nil
+
+    self:_refreshPoint()
 end
 
 function MovableMixin:serializeMovableProps()
@@ -40,20 +44,74 @@ function MovableMixin:deserializeMovableProps(data)
     self.offsetX = data.movable.offsetX
     self.offsetY = data.movable.offsetY
     self.isLocked = data.movable.isLocked
+
+    self:_refreshPoint()
 end
 
 ---@param point FramePointValue
-function MovableMixin:setPoint(point) self.point = point; Addon.EventBus:send("SAVE") end
+function MovableMixin:setPoint(point)
+    self.point = point
+
+    self:_refreshPoint()
+
+    Addon.EventBus:send("SAVE")
+end
+
 ---@param relativeTo string
-function MovableMixin:setRelativeTo(relativeTo) self.relativeTo = relativeTo; Addon.EventBus:send("SAVE") end
+function MovableMixin:setRelativeTo(relativeTo)
+    self.relativeTo = relativeTo
+
+    self:_refreshPoint()
+
+    Addon.EventBus:send("SAVE")
+end
+
 ---@param relativePoint FramePointValue
-function MovableMixin:setRelativePoint(relativePoint) self.relativePoint = relativePoint; Addon.EventBus:send("SAVE") end
+function MovableMixin:setRelativePoint(relativePoint)
+    self.relativePoint = relativePoint
+
+    self:_refreshPoint()
+
+    Addon.EventBus:send("SAVE")
+end
+
 ---@param offsetX number
-function MovableMixin:setOffsetX(offsetX) self.offsetX = offsetX; Addon.EventBus:send("SAVE") end
+function MovableMixin:setOffsetX(offsetX)
+    self.offsetX = offsetX
+
+    self:_refreshPoint()
+
+    Addon.EventBus:send("SAVE")
+end
+
 ---@param offsetY number
-function MovableMixin:setOffsetY(offsetY) self.offsetY = offsetY; Addon.EventBus:send("SAVE") end
+function MovableMixin:setOffsetY(offsetY)
+    self.offsetY = offsetY
+
+    self:_refreshPoint()
+
+    Addon.EventBus:send("SAVE")
+end
+
 ---@param isLocked boolean
-function MovableMixin:setIsLocked(isLocked) self.isLocked = isLocked; Addon.EventBus:send("SAVE") end
+function MovableMixin:setIsLocked(isLocked)
+    self.isLocked = isLocked
+
+    Addon.EventBus:send("SAVE")
+end
+
+function MovableMixin:_refreshPoint()
+    if self.frame == nil then return end
+
+    self.frame:ClearAllPoints()
+    self.frame:SetPoint(
+            self.point,
+            _G[self.relativeTo],
+            self.relativePoint,
+            self.offsetX,
+            self.offsetY
+    )
+end
 
 ---@param frame Frame
 function MovableMixin:registerMovableFrame(frame)
@@ -76,8 +134,10 @@ function MovableMixin:registerMovableFrame(frame)
         self.offsetY = offsetY
 
         Addon.EventBus:send("SAVE")
-        Addon.EventBus:send("FRAME_MOVED", self, frame:GetName())
+        Addon.EventBus:send("MOVABLE_MOVED", self.parent)
     end)
+
+    self.frame = frame
 end
 
 Addon.MovableMixin = MovableMixin

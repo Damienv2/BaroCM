@@ -8,7 +8,9 @@ local Addon = select(2, ...)
 ---@field rank number?
 ---@field children Node[]
 ---@field frame Frame
+---@field isCinematicPlaying boolean
 ---@field type NodeTypeValue
+---@field isExpanded boolean
 local Node = {}
 Node.__index = Node
 
@@ -26,6 +28,24 @@ function Node:default()
     obj.frame = CreateFrame("Frame", obj.id, UIParent)
     obj.frame:SetPoint(Addon.FramePoint.CENTER, UIParent, Addon.FramePoint.CENTER, 0, 0)
     obj.frame:SetSize(0, 0)
+
+    obj.isCinematicPlaying = false
+
+    obj.frame:RegisterEvent("CINEMATIC_START")
+    obj.frame:RegisterEvent("CINEMATIC_STOP")
+    obj.frame:RegisterEvent("PLAY_MOVIE")
+    obj.frame:RegisterEvent("STOP_MOVIE")
+    obj.frame:SetScript("OnEvent", function(_, event, arg1)
+        if event == "CINEMATIC_START" or event == "PLAY_MOVIE" then
+            obj.isCinematicPlaying = true
+            obj:refreshVisibility()
+        elseif event == "CINEMATIC_STOP" or event == "STOP_MOVIE" then
+            obj.isCinematicPlaying = false
+            obj:refreshVisibility()
+        end
+    end)
+
+    obj.isExpanded = false
 
     return obj
 end
@@ -58,7 +78,7 @@ function Node:deserializeProps(data)
 end
 
 ---@param data table
----@param parent Node
+---@param parent Node?
 function Node.deserialize(data, parent)
     local class = Addon.NodeType:getClass(data.type)
     local node = class:default()
@@ -68,15 +88,11 @@ function Node.deserialize(data, parent)
     node.name = data.name
     node.rank = data.rank
     node.children = {}
-    node.frame = CreateFrame("Frame", data.id, UIParent)
-    node.frame:SetPoint(Addon.FramePoint.CENTER, UIParent, Addon.FramePoint.CENTER, 0, 0)
-    node.frame:SetSize(0, 0)
+    node:setParent(parent)
 
     if node.deserializeProps then
         node:deserializeProps(data.props or {})
     end
-
-    node:setParent(parent)
 
     for _, childData in ipairs(data.children or {}) do
         local child = Node.deserialize(childData, node)
@@ -91,12 +107,17 @@ end
 function Node:setParent(parent)
     self:validateParent(parent)
 
+    self.parent = parent
+
+    self.frame:SetFrameStrata("BACKGROUND")
     if parent ~= nil then
         self.frame:SetParent(parent.frame)
         self.frame:ClearAllPoints()
         self.frame:SetPoint(Addon.FramePoint.CENTER, parent.frame, Addon.FramePoint.CENTER, 0, 0)
+        self.frame:SetFrameLevel(parent.frame:GetFrameLevel() + 1)
+    else
+        self.frame:SetFrameLevel(0)
     end
-    self.parent = parent
 
     self:afterSetParent()
 end
@@ -144,9 +165,8 @@ function Node:appendChild(node)
     node:setRank(self:getNextChildRank())
     table.insert(self.children, node)
 
-    local event = "APPEND_" .. node.type
-    Addon.EventBus:send(event, node)
     Addon.EventBus:send("SAVE")
+    Addon.EventBus:send("NODE_APPENDED", self, node)
 
     self:afterAppendChild(node)
 end
@@ -193,8 +213,9 @@ end
 function Node:delete()
     self:hide()
 
+    self:beforeDelete()
+
     for _, child in ipairs(self.children) do
-        child:beforeDelete()
         child:delete()
     end
 
@@ -208,38 +229,55 @@ function Node:delete()
         table.remove(self.parent.children, idxToDelete)
     end
 
-    local event = "DELETE_" .. self.type
-    Addon.EventBus:send(event, self)
-
     if self.parent ~= nil then
         for _, child in ipairs(self.parent.children) do
             if child.rank > self.rank then
                 child:setRank(child.rank - 1)
-                Addon.EventBus:send("RANK_CHANGE", child)
+                Addon.EventBus:send("RANK_CHANGED", child)
             end
         end
     end
+
+    Addon.EventBus:send("SAVE")
+    Addon.EventBus:send("NODE_DELETED", self)
 end
 
 function Node:show()
+    if self.frame:IsShown() == true then return end
+
     self.frame:Show()
 end
 
-function Node:showCascade()
+function Node:showChildren()
     for _, child in ipairs(self.children) do
         child:show()
-        child:showCascade()
+        child:showChildren()
     end
 end
 
 function Node:hide()
+    if self.frame:IsShown() == false then return end
+
     self.frame:Hide()
 end
 
-function Node:hideCascade()
+function Node:hideChildren()
     for _, child in ipairs(self.children) do
         child:hide()
-        child:hideCascade()
+        child:hideChildren()
+    end
+end
+
+---@return boolean
+function Node:shouldShow()
+    return not self.isCinematicPlaying and not UnitInVehicle("player")
+end
+
+function Node:refreshVisibility()
+    if self:shouldShow() == true then
+        self:show()
+    else
+        self:hide()
     end
 end
 

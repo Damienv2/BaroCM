@@ -46,7 +46,9 @@ function BackgroundMixin:_initBgFrame()
     bgFrame:SetAllPoints()
 
     bgFrame.bg = bgFrame:CreateTexture(nil, "BACKGROUND")
-    bgFrame.bg:SetAllPoints()
+    bgFrame.bg:ClearAllPoints()
+    bgFrame.bg:SetPoint(Addon.FramePoint.TOPLEFT, self.parent.frame, Addon.FramePoint.TOPLEFT, 0, 0)
+    bgFrame.bg:SetPoint(Addon.FramePoint.BOTTOMRIGHT, self.parent.frame, Addon.FramePoint.BOTTOMRIGHT, 0, 0)
     bgFrame.bg:SetColorTexture(0, 0, 0, 0.35)
 
     if not self.showBackground then

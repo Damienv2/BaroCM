@@ -3,8 +3,8 @@
 ## Notes: Enhances Blizzard's Cooldown Manager.
 ## IconTexture: Interface\AddOns\BaroCM\resources\barocm_mini_logo
 ## Author: Baromad
-## Version: 2.0.0
-## SavedVariables: BaroCooldownManagerDB2
+## Version: 2.0.1
+## SavedVariables: BaroCooldownManagerDB
 
 annotation.lua
 core/utils/frame_point.lua
@@ -12,6 +12,8 @@ core/utils/event_bus.lua
 core/utils/debug.lua
 core/utils/mixin.lua
 core/utils/orientation.lua
+core/utils/equipment_slot.lua
+core/utils/utils.lua
 core/utils/grid/growth_prio.lua
 core/utils/grid/horizontal_alignment.lua
 core/utils/grid/vertical_alignment.lua
@@ -22,12 +24,45 @@ core/component/movable_mixin.lua
 
 core/node/node_type.lua
 core/node/node.lua
+core/node/root.lua
 core/node/collection/collection.lua
 core/node/collection/collection_member_node.lua
 core/node/group/group.lua
 core/node/group/group_member_node.lua
 core/node/group/cooldown.lua
-core/node/group/item.lua
+core/node/group/cooldown_type.lua
+core/node/item/item.lua
+core/node/item/equipment.lua
+core/node/item/consumable.lua
 core/node/prog_bar/prog_bar.lua
+core/node/prog_bar/aura_bar/aura_bar.lua
+core/node/prog_bar/aura_bar/whitelisted_aura.lua
+core/node/prog_bar/power_bar/power_bar_type.lua
+core/node/prog_bar/power_bar/power_bar.lua
+
+core/blizzard_cdm/cdm_type.lua
+core/blizzard_cdm/cdm_adapter.lua
+core/blizzard_cdm/cdm_adapter_registry.lua
+core/blizzard_cdm/cdm_binder.lua
+
+core/ui/styling.lua
+core/ui/widget.lua
+core/ui/content/component/labeled_section_panel.lua
+core/ui/content/component/movable_mixin_config_panel.lua
+core/ui/navigator/navigator_button.lua
+core/ui/navigator/node_button.lua
+core/ui/navigator/new_collection_member_button.lua
+core/ui/navigator/new_group_member_button.lua
+core/ui/navigator/navigator_panel.lua
+core/ui/content/content_panel.lua
+core/ui/content/collection_panel.lua
+core/ui/content/group_panel.lua
+core/ui/content/cooldown_panel.lua
+core/ui/content/equipment_panel.lua
+core/ui/content/consumable_panel.lua
+core/ui/content/power_bar_panel.lua
+core/ui/content/new_collection_member_panel.lua
+core/ui/content/new_group_member_panel.lua
+core/ui/settings_panel.lua
 
 init.lua

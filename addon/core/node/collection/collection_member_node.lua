@@ -17,8 +17,8 @@ end
 
 ---@param parent Node
 function CollectionMemberNode:validateParent(parent)
-    if parent.type ~= Addon.NodeType.COLLECTION then
-        error("Collection Member Node must have a Collection parent.")
+    if parent.type ~= Addon.NodeType.ROOT and parent.type ~= Addon.NodeType.COLLECTION then
+        error("Collection Member Node must have a Root or Collection parent.")
     end
 end
 

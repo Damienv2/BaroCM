@@ -6,14 +6,14 @@ local Addon = select(2, ...)
 ---@field background BackgroundMixin
 ---@field dynamicSizing DynamicSizingMixin
 ---@field offset number
-local Collection = setmetatable({}, { __index = Addon.Node }) -- inherit from Node
+local Collection = setmetatable({}, { __index = Addon.CollectionMemberNode }) -- inherit from Node
 Collection.__index = Collection
 Collection.type = Addon.NodeType.COLLECTION
 
 ---@return Collection
 function Collection:default()
     ---@type Collection
-    local obj = Addon.Node.default(self)
+    local obj = Addon.CollectionMemberNode.default(self)
 
     Addon.Mixin:embed(obj, "movable", Addon.MovableMixin)
     Addon.Mixin:embed(obj, "background", Addon.BackgroundMixin)
@@ -25,13 +25,6 @@ function Collection:default()
     obj.offset = 0
 
     return obj
-end
-
----@param parent Node
-function Collection:validateParent(parent)
-    if parent ~= nil and parent.type ~= Addon.NodeType.COLLECTION then
-        error("Collection must have a Node or Collection parent.")
-    end
 end
 
 ---@return table
@@ -54,7 +47,7 @@ function Collection:deserializeProps(data)
 end
 
 function Collection:beforeDelete()
-    self.background.setShowBackground(false)
+    self.background:setShowBackground(false)
     self.background.bgFrame = nil
 end
 

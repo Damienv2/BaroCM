@@ -34,5 +34,19 @@ local FramePoint = {
     BOTTOMRIGHT = "BOTTOMRIGHT",
 }
 
+function FramePoint:getOptions()
+    local options = {}
+    for key, value in pairs(Addon.FramePoint) do
+        if type(value) == "string" then
+            table.insert(options, { value = value, text = key })
+        end
+    end
+
+    -- Sort alphabetically if desired
+    table.sort(options, function(a, b) return a.text < b.text end)
+
+    return options
+end
+
 Addon.FramePoint = FramePoint
 return FramePoint

@@ -5,22 +5,68 @@ local Addon = select(2, ...)
 
 local f = CreateFrame("Frame")
 f:RegisterEvent("ADDON_LOADED")
+f:RegisterEvent("PLAYER_ENTERING_WORLD")
+f:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 
+local calledAddonLoaded = false
+local calledPlayerEnteringWorld = false
+local function initUi()
+    if calledAddonLoaded and calledPlayerEnteringWorld then
+        local success, err = pcall(function()
+            -- Put your existing logic here
+            if not Addon.inst.settingsPanel then
+                Addon.inst.settingsPanel = Addon.SettingsPanel:default()
+            end
+        end)
+
+        if not success then
+            error(err)
+        end
+    end
+end
+local function validateVersion()
+    if not Addon.db.version or Addon.db.version < 200 then
+        Addon.inst.root = Addon.Root:default()
+        Addon.db.version = 201
+        Addon.db.serializedRoot = Addon.inst.root:serialize()
+    end
+end
 f:SetScript("OnEvent", function(_, event, arg1)
     if event == "ADDON_LOADED" and arg1 == addonName then
-        BaroCooldownManagerDB2 = BaroCooldownManagerDB2 or {}
-        Addon.db = BaroCooldownManagerDB2
+        -- Load saved data
+        BaroCooldownManagerDB = BaroCooldownManagerDB or {}
+        Addon.db = BaroCooldownManagerDB
         Addon.inst = {}
+
+        validateVersion()
+
         if Addon.db.serializedRoot == nil then
-            Addon.inst.root = Addon.Collection:default()
-            Addon.inst.root:setName("Root")
-        else
-            --TODO make parent optional that defaults to nil
-            Addon.inst.root = Addon.Node.deserialize(Addon.db.serializedRoot, nil)
+            Addon.inst.root = Addon.Root:default()
         end
+
+        calledAddonLoaded = true
+        initUi()
+    elseif event == "PLAYER_ENTERING_WORLD" then
+        Addon.inst.cdmBinder = Addon.CdmBinder:default()
+
+        Addon.inst.cdmAdapterRegistry = Addon.CdmAdapterRegistry:default()
+
+        if Addon.db.serializedRoot ~= nil then
+            Addon.inst.root = Addon.Root.deserialize(Addon.db.serializedRoot)
+        end
+
+        -- Register save event
         Addon.EventBus:register("SAVE", function()
             Addon.db.serializedRoot = Addon.inst.root:serialize()
         end)
+
+        calledPlayerEnteringWorld = true
+        initUi()
+
+        f:UnregisterEvent("PLAYER_ENTERING_WORLD")
+    elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
+        Addon.inst.cdmAdapterRegistry:resetAdapters()
+        Addon.EventBus:send("BUTTON_REFRESH_REQUESTED")
     end
 end)
 
@@ -48,22 +94,28 @@ SlashCmdList.BAROCOOLDOWNMANAGER = function(msg)
     msg = (msg or ""):lower()
 
     if msg == "" then
-
+        Addon.inst.settingsPanel:toggleSettings()
     elseif msg == "cdb" then
-        BaroCooldownManagerDB2 = {}
-        Addon.db = BaroCooldownManagerDB2
+        BaroCooldownManagerDB = {}
+        Addon.db = BaroCooldownManagerDB
         if Addon.inst.root then
             Addon.inst.root:delete()
-            Addon.inst.root = Addon.Collection:default()
+            Addon.inst.root = Addon.Root:default()
             Addon.db.serializedRoot = Addon.inst.root:serialize()
         end
     elseif msg == "tst1" then
-        local newGroup = Addon.Group:default()
-        Addon.inst.root:appendChild(newGroup)
+        Addon.Debug:printTable(Addon.inst.cdmAdapterRegistry:getAttachedAdapters())
     elseif msg == "tst2" then
-        print(Addon.inst.root.children[1].background:setShowBackground(not Addon.inst.root.children[1].background.showBackground))
+        Addon.Debug:printTable(Addon.inst.cdmBinder:getBoundAdapters())
+        print("-----------------------------------")
+    elseif msg == "tst3"  then
+        Addon.Debug:printTable(Addon.inst.cdmBinder:getBoundCooldowns())
+        print("-----------------------------------")
+    elseif msg == "tst4"  then
+        Addon.Debug:printTable(Addon.inst.root.children[1]:serialize())
+        print("-----------------------------------")
     elseif msg == "p" then
-        DevTools_Dump(Addon.inst.root)
+        Addon.inst.root.children[1]:refreshChildFrames()
     end
 
 end
