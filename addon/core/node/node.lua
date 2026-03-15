@@ -58,7 +58,7 @@ function Node:deserializeProps(data)
 end
 
 ---@param data table
----@param parent Node
+---@param parent Node?
 function Node.deserialize(data, parent)
     local class = Addon.NodeType:getClass(data.type)
     local node = class:default()

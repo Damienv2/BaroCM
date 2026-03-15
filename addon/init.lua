@@ -5,9 +5,11 @@ local Addon = select(2, ...)
 
 local f = CreateFrame("Frame")
 f:RegisterEvent("ADDON_LOADED")
+f:RegisterEvent("PLAYER_ENTERING_WORLD")
 
 f:SetScript("OnEvent", function(_, event, arg1)
     if event == "ADDON_LOADED" and arg1 == addonName then
+        -- Load saved data
         BaroCooldownManagerDB2 = BaroCooldownManagerDB2 or {}
         Addon.db = BaroCooldownManagerDB2
         Addon.inst = {}
@@ -15,12 +17,18 @@ f:SetScript("OnEvent", function(_, event, arg1)
             Addon.inst.root = Addon.Collection:default()
             Addon.inst.root:setName("Root")
         else
-            --TODO make parent optional that defaults to nil
-            Addon.inst.root = Addon.Node.deserialize(Addon.db.serializedRoot, nil)
+            Addon.inst.root = Addon.Node.deserialize(Addon.db.serializedRoot)
         end
+
+        -- Register save event
         Addon.EventBus:register("SAVE", function()
             Addon.db.serializedRoot = Addon.inst.root:serialize()
         end)
+    elseif event == "PLAYER_ENTERING_WORLD" then
+        -- Setup CDM Adapter Registry
+        Addon.inst.cdmAdapterRegistry = Addon.CdmAdapterRegistry:default()
+
+        self:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end
 end)
 
@@ -61,9 +69,9 @@ SlashCmdList.BAROCOOLDOWNMANAGER = function(msg)
         local newGroup = Addon.Group:default()
         Addon.inst.root:appendChild(newGroup)
     elseif msg == "tst2" then
-        print(Addon.inst.root.children[1].background:setShowBackground(not Addon.inst.root.children[1].background.showBackground))
+        Addon.Debug:printTable(Addon.inst.cdmAdapterRegistry.adapters)
     elseif msg == "p" then
-        DevTools_Dump(Addon.inst.root)
+        Addon.Debug:printTable(Addon.inst.root)
     end
 
 end

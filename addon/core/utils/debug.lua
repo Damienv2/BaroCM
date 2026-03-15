@@ -22,5 +22,10 @@ function Debug:addDebugFrame(frame, r, g, b, a)
     frame.debugBg:SetVertexColor(r, g, b, a)
 end
 
+---@param aTable table
+function Debug:printTable(aTable)
+    DevTools_Dump(aTable)
+end
+
 Addon.Debug = Debug
 return Debug
