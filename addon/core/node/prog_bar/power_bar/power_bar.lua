@@ -38,7 +38,7 @@ function PowerBar:setPowerBarType(powerBarType)
 
     self.powerBarType = powerBarType
 
-    if powerBarType ~= nil then
+    if powerBarType ~= nil and self.specId == select(1, GetSpecializationInfo(GetSpecialization())) then
         local targetPowerType = Addon.PowerBarType:toPowerBarType(self.powerBarType)
         local cur = UnitPower("player", targetPowerType)
         local max = UnitPowerMax("player", targetPowerType)
@@ -48,10 +48,8 @@ function PowerBar:setPowerBarType(powerBarType)
         self.bar:SetStatusBarColor(unpack({powerBarColor.r, powerBarColor.g, powerBarColor.b, powerBarColor.a}))
 
         self:startRefreshingProgress()
-        self.frame:Show()
     else
         self:stopRefreshingProgress()
-        self.frame:Hide()
     end
 
     Addon.EventBus:send("SAVE")
@@ -59,8 +57,6 @@ end
 
 function PowerBar:refreshProgress()
     Addon.ProgBar.refreshProgress(self)
-
-    --Addon.Debug:printTable(C_UnitAuras.GetPlayerAuraBySpellID(1245577))
 
     local targetPowerType = Addon.PowerBarType:toPowerBarType(self.powerBarType)
     local cur = UnitPower("player", targetPowerType)

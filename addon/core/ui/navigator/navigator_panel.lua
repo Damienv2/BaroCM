@@ -132,8 +132,9 @@ function NavigatorPanel:_nodesToButtons(width, nodes, level)
 
     for _, node in ipairs(nodes) do
         if node.type ~= Addon.NodeType.COOLDOWN
-                and node.type ~= Addon.NodeType.ITEM
+                and node.type ~= Addon.NodeType.EQUIPMENT
                 and node.type ~= Addon.NodeType.CONSUMABLE
+                and node.type ~= Addon.NodeType.POWER_BAR
                 or (node.specId and node.specId == select(1, GetSpecializationInfo(GetSpecialization()))) then
             local actualWidth = width - (20 * level)
             local nodeButton = Addon.NodeButton:create(actualWidth, node)

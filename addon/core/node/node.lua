@@ -100,7 +100,13 @@ function Node.deserialize(data, parent)
         node:afterAppendChild(child)
     end
 
+    node:afterDeserialize()
+
     return node
+end
+
+function Node:afterDeserialize()
+
 end
 
 ---@param parent Node

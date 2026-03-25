@@ -61,6 +61,17 @@ function ProgBar:default()
 
     obj.refreshProgressTicker = CreateFrame("Frame")
 
+    obj.frame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+    obj.frame:SetScript("OnEvent", function(_, event, arg1)
+        if event == "PLAYER_SPECIALIZATION_CHANGED" then
+            if obj:shouldShow() == true then
+                obj:startRefreshingProgress()
+            else
+                obj:stopRefreshingProgress()
+            end
+        end
+    end)
+
     return obj
 end
 
@@ -79,10 +90,18 @@ end
 ---@param data table
 function ProgBar:deserializeProps(data)
     self.movable:deserializeMovableProps(data)
-    self:setSpecId(data.specId)
-    self:setWidth(data.width)
-    self:setHeight(data.height)
-    self:setBarColor(data.barColor)
+    self.specId = data.specId
+    self.width = data.width
+    self.height = data.height
+    self.barColor = data.barColor
+end
+
+function ProgBar:afterDeserialize()
+    if not self:shouldShow() then
+        self.frame:Hide()
+    else
+        self.frame:Show()
+    end
 end
 
 function ProgBar:delete()
@@ -123,6 +142,9 @@ function ProgBar:setProgress(value, maxValue)
 end
 
 function ProgBar:startRefreshingProgress()
+    if self:shouldShow() == false then return end
+
+    self.frame:Show()
     self.refreshProgressTicker:SetScript("OnUpdate", function(_, elapsed)
         self:refreshProgress()
     end)
@@ -133,6 +155,7 @@ function ProgBar:refreshProgress()
 end
 
 function ProgBar:stopRefreshingProgress()
+    self.frame:Hide()
     self.refreshProgressTicker:SetScript("OnUpdate", nil)
 end
 
