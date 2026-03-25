@@ -27,7 +27,7 @@ end
 local function validateVersion()
     if not Addon.db.version or Addon.db.version < 200 then
         Addon.inst.root = Addon.Root:default()
-        Addon.db.version = 201
+        Addon.db.version = 202
         Addon.db.serializedRoot = Addon.inst.root:serialize()
     end
 end

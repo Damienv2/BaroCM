@@ -3,7 +3,7 @@
 ## Notes: Enhances Blizzard's Cooldown Manager.
 ## IconTexture: Interface\AddOns\BaroCM\resources\barocm_mini_logo
 ## Author: Baromad
-## Version: 2.0.1
+## Version: 2.0.2
 ## SavedVariables: BaroCooldownManagerDB
 
 annotation.lua
