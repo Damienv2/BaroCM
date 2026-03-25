@@ -83,6 +83,7 @@ function CooldownPanel:createSpellFrame(cooldown, cooldownButton)
                     cooldown:setCooldownId(val)
                     cooldownButton:setButtonIcon(Addon.Utils:getSpellTexture(cooldown.spellId))
                     cooldownButton:setButtonText(cooldown.spellName)
+                    self:refreshWarningVisibility(cooldown, self.spellWarningFrame, self.spellWarningText)
                 end
             }
     )
@@ -91,6 +92,21 @@ function CooldownPanel:createSpellFrame(cooldown, cooldownButton)
     self.spellSelectionFrame:SetPoint(Addon.FramePoint.TOPLEFT, self.spellHeaderFrame, Addon.FramePoint.BOTTOMLEFT, 0, -self.margin)
     self.spellSelectionFrame:SetPoint(Addon.FramePoint.TOPRIGHT, self.spellHeaderFrame, Addon.FramePoint.BOTTOMRIGHT, 0, -self.margin)
     self.spellSelectionFrame:Show()
+    Addon.EventBus:register("CDM_FRAME_CHANGED", function()
+        self:refreshWarningVisibility(cooldown, self.spellWarningFrame, self.spellWarningText)
+    end)
+
+    self.spellWarningFrame = CreateFrame("Frame", nil, self.spellFrame)
+    self.spellWarningFrame:SetPoint(Addon.FramePoint.TOPLEFT, self.spellSelectionFrame, Addon.FramePoint.BOTTOMLEFT, 0, -self.margin)
+    self.spellWarningFrame:SetPoint(Addon.FramePoint.TOPRIGHT, self.spellSelectionFrame, Addon.FramePoint.BOTTOMRIGHT, 0, -self.margin)
+    self.spellWarningFrame:SetHeight(0)
+
+    self.spellWarningText = self.spellWarningFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+    self.spellWarningText:SetPoint(Addon.FramePoint.TOPLEFT, self.spellWarningFrame, Addon.FramePoint.TOPLEFT, 0, 0)
+    self.spellWarningText:SetPoint(Addon.FramePoint.TOPRIGHT, self.spellWarningFrame, Addon.FramePoint.TOPRIGHT, 0, 0)
+    self.spellWarningText:SetJustifyH("LEFT")
+    self.spellWarningText:SetTextColor(1, 0.35, 0.35, 1)
+    self:refreshWarningVisibility(cooldown, self.spellWarningFrame, self.spellWarningText)
 
     self.auraSwapEnabledFrame = Addon.Widget:createCheckbox(
             "Aura Swap Enabled",
@@ -101,11 +117,19 @@ function CooldownPanel:createSpellFrame(cooldown, cooldownButton)
             }
     )
     self.auraSwapEnabledFrame:SetParent(self.spellFrame)
-    self.auraSwapEnabledFrame:SetPoint(Addon.FramePoint.TOPLEFT, self.spellSelectionFrame, Addon.FramePoint.BOTTOMLEFT, 0, -self.margin)
-    self.auraSwapEnabledFrame:SetPoint(Addon.FramePoint.TOPRIGHT, self.spellSelectionFrame, Addon.FramePoint.BOTTOMRIGHT, 0, -self.margin)
+    self.auraSwapEnabledFrame:SetPoint(Addon.FramePoint.TOPLEFT, self.spellWarningFrame, Addon.FramePoint.BOTTOMLEFT, 0, -self.margin)
+    self.auraSwapEnabledFrame:SetPoint(Addon.FramePoint.TOPRIGHT, self.spellWarningFrame, Addon.FramePoint.BOTTOMRIGHT, 0, -self.margin)
     self.auraSwapEnabledFrame:Hide()
 
-    self.spellFrame:SetHeight(self.spellHeaderFrame:GetHeight() + self.margin + self.spellSelectionFrame:GetHeight() + self.margin + self.auraSwapEnabledFrame:GetHeight())
+    self.spellFrame:SetHeight(
+        self.spellHeaderFrame:GetHeight()
+        + self.margin
+        + self.spellSelectionFrame:GetHeight()
+        + self.margin
+        + self.spellWarningFrame:GetHeight()
+        + self.margin
+        + self.auraSwapEnabledFrame:GetHeight()
+    )
 end
 
 ---@param cooldown Cooldown
@@ -132,6 +156,7 @@ function CooldownPanel:createAuraFrame(cooldown, cooldownButton)
                     cooldown:setCooldownId(val)
                     cooldownButton:setButtonIcon(Addon.Utils:getSpellTexture(cooldown.spellId))
                     cooldownButton:setButtonText(cooldown.spellName)
+                    self:refreshWarningVisibility(cooldown, self.auraWarningFrame, self.auraWarningText)
                 end
             }
     )
@@ -140,8 +165,29 @@ function CooldownPanel:createAuraFrame(cooldown, cooldownButton)
     self.auraSelectionFrame:SetPoint(Addon.FramePoint.TOPLEFT, self.auraHeaderFrame, Addon.FramePoint.BOTTOMLEFT, 0, -self.margin)
     self.auraSelectionFrame:SetPoint(Addon.FramePoint.TOPRIGHT, self.auraHeaderFrame, Addon.FramePoint.BOTTOMRIGHT, 0, -self.margin)
     self.auraSelectionFrame:Show()
+    Addon.EventBus:register("CDM_FRAME_CHANGED", function()
+        self:refreshWarningVisibility(cooldown, self.auraWarningFrame, self.auraWarningText)
+    end)
 
-    self.auraFrame:SetHeight(self.auraHeaderFrame:GetHeight() + self.margin + self.auraSelectionFrame:GetHeight())
+    self.auraWarningFrame = CreateFrame("Frame", nil, self.auraFrame)
+    self.auraWarningFrame:SetPoint(Addon.FramePoint.TOPLEFT, self.auraSelectionFrame, Addon.FramePoint.BOTTOMLEFT, 0, -self.margin)
+    self.auraWarningFrame:SetPoint(Addon.FramePoint.TOPRIGHT, self.auraSelectionFrame, Addon.FramePoint.BOTTOMRIGHT, 0, -self.margin)
+    self.auraWarningFrame:SetHeight(0)
+
+    self.auraWarningText = self.auraWarningFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+    self.auraWarningText:SetPoint(Addon.FramePoint.TOPLEFT, self.auraWarningFrame, Addon.FramePoint.TOPLEFT, 0, 0)
+    self.auraWarningText:SetPoint(Addon.FramePoint.TOPRIGHT, self.auraWarningFrame, Addon.FramePoint.TOPRIGHT, 0, 0)
+    self.auraWarningText:SetJustifyH("LEFT")
+    self.auraWarningText:SetTextColor(1, 0.35, 0.35, 1)
+    self:refreshWarningVisibility(cooldown, self.auraWarningFrame, self.auraWarningText)
+
+    self.auraFrame:SetHeight(
+        self.auraHeaderFrame:GetHeight()
+        + self.margin
+        + self.auraSelectionFrame:GetHeight()
+        + self.margin
+        + self.auraWarningFrame:GetHeight()
+    )
 end
 
 function CooldownPanel:clearSpellAuraFrame()
@@ -152,6 +198,8 @@ function CooldownPanel:clearSpellAuraFrame()
         self.spellFrame = nil
         self.spellHeaderFrame = nil
         self.spellSelectionFrame = nil
+        self.spellWarningFrame = nil
+        self.spellWarningText = nil
     end
 
     if self.auraFrame ~= nil then
@@ -161,6 +209,23 @@ function CooldownPanel:clearSpellAuraFrame()
         self.auraFrame = nil
         self.auraHeaderFrame = nil
         self.auraSelectionFrame = nil
+        self.auraWarningFrame = nil
+        self.auraWarningText = nil
+    end
+end
+
+---@param cooldown Cooldown
+function CooldownPanel:refreshWarningVisibility(cooldown, warningFrame, warningText)
+    local shouldWarn = cooldown and cooldown.boundCdmAdapter and cooldown.boundCdmAdapter:isAttachedToFrame() == false
+
+    if shouldWarn == true then
+        warningText:SetText("The selected spell has not been enabled in Blizzard's CDM. Due to API limitations, please move the spell to Essential Cooldowns, Utility Cooldowns, or Tracked Buffs in Blizzard's CDM to enable tracking in BaroCDM. It is recommended to do this for all spells while using BaroCDM.")
+        warningFrame:SetHeight(28)
+        warningFrame:Show()
+    else
+        warningText:SetText("")
+        warningFrame:SetHeight(0)
+        warningFrame:Hide()
     end
 end
 

@@ -79,6 +79,8 @@ function CdmAdapter:setCdmFrame(frame, viewerName)
     self:applyAuraSwapSetting()
     self:stylizeCdmFrame()
     self:refreshAttachment()
+
+    Addon.EventBus:send("CDM_FRAME_CHANGED")
 end
 
 function CdmAdapter:clearCdmFrame()
