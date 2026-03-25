@@ -17,8 +17,8 @@ function MovableMixinConfigPanel.getFrame(parentFrame, movable, background, anch
         positionFrame:SetPoint(Addon.FramePoint.TOPLEFT, parentFrame, Addon.FramePoint.TOPLEFT, 0, 0)
         positionFrame:SetPoint(Addon.FramePoint.TOPRIGHT, parentFrame, Addon.FramePoint.TOPRIGHT, 0, 0)
     else
-        positionFrame:SetPoint(Addon.FramePoint.TOPLEFT, anchorFrame, Addon.FramePoint.TOPLEFT, 0, -margin * 2)
-        positionFrame:SetPoint(Addon.FramePoint.TOPRIGHT, anchorFrame, Addon.FramePoint.TOPRIGHT, 0, -margin * 2)
+        positionFrame:SetPoint(Addon.FramePoint.TOPLEFT, anchorFrame, Addon.FramePoint.BOTTOMLEFT, 0, -margin * 2)
+        positionFrame:SetPoint(Addon.FramePoint.TOPRIGHT, anchorFrame, Addon.FramePoint.BOTTOMRIGHT, 0, -margin * 2)
     end
 
     local groupPositionHeader = Addon.Widget:createSectionHeader("Position")
@@ -82,7 +82,7 @@ function MovableMixinConfigPanel.getFrame(parentFrame, movable, background, anch
                 onEnterPressed = function(val) movable:setOffsetY(val) end
             }
     )
-    offsetYFrame:SetParent(leftGroupPositionFrame)
+    offsetYFrame:SetParent(rightGroupPositionFrame)
     offsetYFrame:SetPoint(Addon.FramePoint.TOPLEFT, rightGroupPositionFrame, Addon.FramePoint.TOPLEFT, 0, 0)
     offsetYFrame:SetPoint(Addon.FramePoint.TOPRIGHT, rightGroupPositionFrame, Addon.FramePoint.TOPRIGHT, 0, 0)
     offsetYFrame:Show()
@@ -92,21 +92,25 @@ function MovableMixinConfigPanel.getFrame(parentFrame, movable, background, anch
         end
     end)
 
-    local showBackgroundFrame = CreateFrame("Frame")
+    local lockAnchor = offsetYFrame
+    local rightHeight = offsetYFrame:GetHeight()
     if background ~= nil then
-        showBackgroundFrame = Addon.Widget:createCheckbox(
-                "Show Background",
-                {
-                    checked = background.showBackground,
-                    tooltip = "Toggle the visibility of the groups background.",
-                    onChange = function(checked) background:setShowBackground(checked) end
-                }
+        local showBackgroundFrame = Addon.Widget:createCheckbox(
+            "Show Background",
+            {
+                checked = background.showBackground,
+                tooltip = "Toggle the visibility of the groups background.",
+                onChange = function(checked) background:setShowBackground(checked) end
+            }
         )
+        showBackgroundFrame:SetParent(rightGroupPositionFrame)
+        showBackgroundFrame:SetPoint(Addon.FramePoint.TOPLEFT, offsetYFrame, Addon.FramePoint.BOTTOMLEFT, 0, -margin)
+        showBackgroundFrame:SetPoint(Addon.FramePoint.TOPRIGHT, offsetYFrame, Addon.FramePoint.BOTTOMRIGHT, 0, -margin)
+        showBackgroundFrame:Show()
+
+        lockAnchor = showBackgroundFrame
+        rightHeight = rightHeight + margin + showBackgroundFrame:GetHeight()
     end
-    showBackgroundFrame:SetParent(rightGroupPositionFrame)
-    showBackgroundFrame:SetPoint(Addon.FramePoint.TOPLEFT, offsetYFrame, Addon.FramePoint.BOTTOMLEFT, 0, -margin)
-    showBackgroundFrame:SetPoint(Addon.FramePoint.TOPRIGHT, offsetYFrame, Addon.FramePoint.BOTTOMRIGHT, 0, -margin)
-    showBackgroundFrame:Show()
 
     local lockedFrame = Addon.Widget:createCheckbox(
             "Locked",
@@ -117,11 +121,11 @@ function MovableMixinConfigPanel.getFrame(parentFrame, movable, background, anch
             }
     )
     lockedFrame:SetParent(rightGroupPositionFrame)
-    lockedFrame:SetPoint(Addon.FramePoint.TOPLEFT, showBackgroundFrame, Addon.FramePoint.BOTTOMLEFT, 0, -margin)
-    lockedFrame:SetPoint(Addon.FramePoint.TOPRIGHT, showBackgroundFrame, Addon.FramePoint.BOTTOMRIGHT, 0, -margin)
+    lockedFrame:SetPoint(Addon.FramePoint.TOPLEFT, lockAnchor, Addon.FramePoint.BOTTOMLEFT, 0, -margin)
+    lockedFrame:SetPoint(Addon.FramePoint.TOPRIGHT, lockAnchor, Addon.FramePoint.BOTTOMRIGHT, 0, -margin)
     lockedFrame:Show()
 
-    rightGroupPositionFrame:SetHeight(offsetYFrame:GetHeight() + margin + showBackgroundFrame:GetHeight() + margin + lockedFrame:GetHeight())
+    rightGroupPositionFrame:SetHeight(rightHeight + margin + lockedFrame:GetHeight())
 
     positionFrame:SetHeight(groupPositionHeader:GetHeight() + math.max(leftGroupPositionFrame:GetHeight(), rightGroupPositionFrame:GetHeight()))
 
