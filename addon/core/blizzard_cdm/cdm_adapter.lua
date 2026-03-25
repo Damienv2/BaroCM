@@ -150,11 +150,16 @@ function CdmAdapter:refreshAttachment()
         self.cdmFrame:SetParent(target)
     end
 
-    local p, relTo, rp, x, y = self.cdmFrame:GetPoint(1)
-    local wrongPoint = p ~= Addon.FramePoint.CENTER
-            or relTo ~= target
-            or rp ~= Addon.FramePoint.CENTER
-            or x ~= 0 or y ~= 0
+    local p1, relTo1, rp1, x1, y1 = self.cdmFrame:GetPoint(1)
+    local p2, relTo2, rp2, x2, y2 = self.cdmFrame:GetPoint(2)
+    local wrongPoint = p1 ~= Addon.FramePoint.TOPLEFT
+            or relTo1 ~= target
+            or rp1 ~= Addon.FramePoint.TOPLEFT
+            or x1 ~= 0 or y1 ~= 0
+            or p2 ~= Addon.FramePoint.BOTTOMRIGHT
+            or relTo2 ~= target
+            or rp2 ~= Addon.FramePoint.BOTTOMRIGHT
+            or x2 ~= 0 or y2 ~= 0
 
     if wrongPoint then
         self.cdmFrame:ClearAllPoints()
