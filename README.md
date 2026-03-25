@@ -3,15 +3,17 @@ BaroCM is a World of Warcraft addon that extends Blizzard’s Cooldown Viewer wi
 ## Planned Features
 ### High Priority
 - Anchor groups to groups
-- Bars for tracking class resources
 - Reorder item position
 - Account for Blizzard's Cooldown Manager not being enabled
+- Talent based cooldown loading
 ### Medium Priority
 - Add tracking for Racial Abilities
 - Fix bug causing Item Selection warning message to display for unlearned spells
+- Fix initial glow size animation
+- Add feature to disable glows
 ### Low Priority
 - Spell icons in item selection dropdown
-- Update properties window when deleting item
+- Update properties window when deleting
 ### Discovery
 - Add personal Defensive Cooldowns to the externals window
 

@@ -128,9 +128,16 @@ function NavigatorPanel:_nodesToButtons(width, nodes, level)
     if nodes == nil or #nodes == 0 then return {} end
     if level == nil then level = 0 end
 
-    local nodeButtons = {}
+    local sortedNodes = {}
+    for i, node in ipairs(nodes) do
+        sortedNodes[i] = node
+    end
+    table.sort(sortedNodes, function(a, b)
+        return (a.rank or 0) < (b.rank or 0)
+    end)
 
-    for _, node in ipairs(nodes) do
+    local nodeButtons = {}
+    for _, node in ipairs(sortedNodes) do
         if node.type ~= Addon.NodeType.COOLDOWN
                 and node.type ~= Addon.NodeType.EQUIPMENT
                 and node.type ~= Addon.NodeType.CONSUMABLE

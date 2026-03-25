@@ -46,6 +46,8 @@ function NodeButton:create(frameWidth, node)
     end
     obj:setButtonText(node.name)
 
+    obj:_createMoveButtons()
+
     return obj
 end
 
@@ -133,6 +135,19 @@ function NodeButton:delete()
     end
     self.node = nil
     self.popupFrame = nil
+
+    if self.moveUpButton then
+        self.moveUpButton:SetScript("OnClick", nil)
+        self.moveUpButton:Hide()
+        self.moveUpButton:SetParent(nil)
+    end
+    if self.moveDownButton then
+        self.moveDownButton:SetScript("OnClick", nil)
+        self.moveDownButton:Hide()
+        self.moveDownButton:SetParent(nil)
+    end
+    self.moveUpButton = nil
+    self.moveDownButton = nil
 end
 
 function NodeButton:toggleIsExpanded()
@@ -145,6 +160,57 @@ function NodeButton:toggleIsExpanded()
     end
 
     Addon.EventBus:send("NODE_BUTTON_TOGGLED")
+end
+
+function NodeButton:_createMoveButtons()
+    local h = self.buttonFrame:GetHeight()
+    local s = math.floor(h * 0.45)
+
+    self.moveUpButton = CreateFrame("Button", nil, self.buttonFrame, "BackdropTemplate")
+    self.moveUpButton:SetSize(s, s)
+    self.moveUpButton:SetPoint(Addon.FramePoint.RIGHT, self.buttonFrame, Addon.FramePoint.RIGHT, -3, s / 2)
+    self.moveUpButton:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up")
+    self.moveUpButton:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down")
+    self.moveUpButton:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+
+    self.moveDownButton = CreateFrame("Button", nil, self.buttonFrame, "BackdropTemplate")
+    self.moveDownButton:SetSize(s, s)
+    self.moveDownButton:SetPoint(Addon.FramePoint.TOP, self.moveUpButton, Addon.FramePoint.BOTTOM, 0, -1)
+    self.moveDownButton:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+    self.moveDownButton:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down")
+    self.moveDownButton:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+
+    self.moveUpButton:SetScript("OnClick", function() self:moveByRankDelta(-1) end)
+    self.moveDownButton:SetScript("OnClick", function() self:moveByRankDelta(1) end)
+
+    -- keep label from overlapping new controls
+    self.buttonText:ClearAllPoints()
+    self.buttonText:SetPoint(Addon.FramePoint.LEFT, self.iconBorder, Addon.FramePoint.RIGHT, (h - (h * 0.7)) / 2, 0)
+    self.buttonText:SetPoint(Addon.FramePoint.RIGHT, self.moveUpButton, Addon.FramePoint.LEFT, -4, 0)
+    self.buttonText:SetJustifyH("LEFT")
+end
+
+function NodeButton:_findSiblingByRank(rank)
+    if not self.node.parent then return nil end
+    for _, sibling in ipairs(self.node.parent.children or {}) do
+        if sibling.rank == rank then return sibling end
+    end
+    return nil
+end
+
+function NodeButton:moveByRankDelta(delta)
+    if not self.node.parent or not self.node.rank then return end
+
+    local targetRank = self.node.rank + delta
+    if targetRank < 0 or targetRank >= self.node.parent:getNextChildRank() then return end
+
+    local targetSibling = self:_findSiblingByRank(targetRank)
+    if targetSibling then
+        targetSibling:setRank(self.node.rank)
+    end
+    self.node:setRank(targetRank)
+
+    Addon.EventBus:send("BUTTON_REFRESH_REQUESTED")
 end
 
 Addon.NodeButton = NodeButton
