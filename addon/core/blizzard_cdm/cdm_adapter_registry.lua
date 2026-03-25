@@ -88,6 +88,7 @@ function CdmAdapterRegistry:getAttachedAdapters()
 end
 
 function CdmAdapterRegistry:resetAdapters()
+    Addon.EventBus:send("RESET_CDM_ADAPTER")
     self.adapters = self:initAdapters()
 end
 

@@ -19,6 +19,9 @@ function CdmBinder:default()
     Addon.EventBus:register("CREATE_CDM_ADAPTER", function(adapter)
         table.insert(obj.adapters, adapter)
     end)
+    Addon.EventBus:register("RESET_CDM_ADAPTER", function(adapter)
+        obj.adapters = {}
+    end)
 
     obj.cooldowns = {}
     Addon.EventBus:register("NEW_COOLDOWN", function(cooldown)
