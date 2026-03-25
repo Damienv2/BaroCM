@@ -103,7 +103,7 @@ function CooldownPanel:createSpellFrame(cooldown, cooldownButton)
     self.auraSwapEnabledFrame:SetParent(self.spellFrame)
     self.auraSwapEnabledFrame:SetPoint(Addon.FramePoint.TOPLEFT, self.spellSelectionFrame, Addon.FramePoint.BOTTOMLEFT, 0, -self.margin)
     self.auraSwapEnabledFrame:SetPoint(Addon.FramePoint.TOPRIGHT, self.spellSelectionFrame, Addon.FramePoint.BOTTOMRIGHT, 0, -self.margin)
-    self.auraSwapEnabledFrame:Show()
+    self.auraSwapEnabledFrame:Hide()
 
     self.spellFrame:SetHeight(self.spellHeaderFrame:GetHeight() + self.margin + self.spellSelectionFrame:GetHeight() + self.margin + self.auraSwapEnabledFrame:GetHeight())
 end
