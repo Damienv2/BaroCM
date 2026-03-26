@@ -59,11 +59,14 @@ function NavigatorButton:create(frameWidth)
         if button == "RightButton" then
             obj:handleRightClick()
         elseif button == "LeftButton" then
+            local key = obj:getSelectionKey()
+            Addon.EventBus:send("NAVIGATOR_BUTTON_SELECTED", key)
             obj:handleLeftClick()
         end
     end)
 
     obj.level = 0
+    obj.isSelected = false
 
     return obj
 end
@@ -101,11 +104,31 @@ function NavigatorButton:delete()
     self.iconBorder = nil
     self.buttonText = nil
     self.level = nil
+    self.isSelected = nil
 end
 
 ---@param level number
 function NavigatorButton:setLevel(level)
     self.level = level
+end
+
+function NavigatorButton:setSelected(selected)
+    self.isSelected = selected == true
+
+    if self.isSelected then
+        self.buttonFrame:SetBackdropColor(0.18, 0.45, 0.75, 0.35)
+        self.buttonFrame:SetBackdropBorderColor(0.35, 0.7, 1.0, 1.0)
+    else
+        self.buttonFrame:SetBackdropColor(unpack(Addon.Styling.button.color1))
+        self.buttonFrame:SetBackdropBorderColor(unpack(Addon.Styling.button.borderColor1))
+    end
+end
+
+function NavigatorButton:getSelectionKey()
+    if self.node and self.node.id then
+        return self.node.id
+    end
+    return nil
 end
 
 Addon.NavigatorButton = NavigatorButton

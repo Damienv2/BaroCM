@@ -16,6 +16,7 @@ function Item:default()
 
     obj.itemId = nil
     obj.refreshRuntimeStateTicker = nil
+    obj.specId = select(1, GetSpecializationInfo(GetSpecialization()))
 
     -- ARTWORK: icon
     local icon = obj.frame:CreateTexture(nil, "ARTWORK")
@@ -51,6 +52,7 @@ end
 function Item:serializeProps()
     local props = Addon.GroupMemberNode.serializeProps(self)
     props.itemId = self.itemId
+    props.specId = self.specId
 
     return props
 end
@@ -58,6 +60,7 @@ end
 function Item:deserializeProps(data)
     Addon.GroupMemberNode.deserializeProps(self, data)
     self:setItemId(data.itemId)
+    self.specId = data.specId ~= nil and data.specId or select(1, GetSpecializationInfo(GetSpecialization()))
 end
 
 function Item:afterSetParent()
@@ -77,7 +80,7 @@ end
 function Item:shouldShow()
     local parentShouldShow = Addon.GroupMemberNode.shouldShow(self)
 
-    local shouldShow = self.itemId ~= nil
+    local shouldShow = self.itemId ~= nil and self.specId == select(1, GetSpecializationInfo(GetSpecialization()))
 
     return parentShouldShow and shouldShow
 end

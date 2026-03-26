@@ -46,6 +46,13 @@ function NavigatorPanel:create(frameWidth,  frameHeight)
         obj:refreshButtons()
     end)
 
+    obj.selectedButtonKey = nil
+
+    Addon.EventBus:register("NAVIGATOR_BUTTON_SELECTED", function(selectionKey)
+        obj.selectedButtonKey = selectionKey
+        obj:refreshSelectionState()
+    end)
+
     return obj
 end
 
@@ -73,6 +80,8 @@ function NavigatorPanel:refreshButtons()
         newCollectionMemberButton.buttonFrame:SetPoint(Addon.FramePoint.TOPRIGHT, lastBtn.buttonFrame, Addon.FramePoint.BOTTOMRIGHT, 0, 0)
     end
     table.insert(self.otherButtons, newCollectionMemberButton)
+
+    self:refreshSelectionState()
 end
 
 ---@param nodeButtons NodeButton[]
@@ -157,6 +166,22 @@ function NavigatorPanel:_nodesToButtons(width, nodes, level)
     end
 
     return nodeButtons
+end
+
+function NavigatorPanel:refreshSelectionState()
+    for _, nodeButton in ipairs(self.nodeButtons) do
+        self:_refreshSelectionStateRecursive(nodeButton)
+    end
+    for _, otherButton in ipairs(self.otherButtons) do
+        otherButton:setSelected(false)
+    end
+end
+
+function NavigatorPanel:_refreshSelectionStateRecursive(nodeButton)
+    nodeButton:setSelected(nodeButton:getSelectionKey() == self.selectedButtonKey)
+    for _, child in ipairs(nodeButton.children or {}) do
+        self:_refreshSelectionStateRecursive(child)
+    end
 end
 
 Addon.NavigatorPanel = NavigatorPanel
