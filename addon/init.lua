@@ -29,7 +29,7 @@ local function validateVersion()
         Addon.inst.root = Addon.Root:default()
         Addon.db.serializedRoot = Addon.inst.root:serialize()
     end
-    Addon.db.version = 2204
+    Addon.db.version = 2205
 end
 f:SetScript("OnEvent", function(_, event, arg1)
     if event == "ADDON_LOADED" and arg1 == addonName then
@@ -104,7 +104,16 @@ SlashCmdList.BAROCOOLDOWNMANAGER = function(msg)
             Addon.db.serializedRoot = Addon.inst.root:serialize()
         end
     elseif msg == "tst1" then
-        Addon.Debug:printTable(Addon.inst.cdmAdapterRegistry:getAttachedAdapters())
+        local function IsCooldownManagerEnabled()
+            -- Use the modern Settings API instead of CVar
+            local setting = Settings.GetSetting("enableCooldownManager")
+            if setting then
+                return setting:GetValue() -- Returns a boolean (true/false)
+            end
+            -- If nil, it means the setting isn't loaded; default to false
+            return false
+        end
+        print(IsCooldownManagerEnabled())
     elseif msg == "tst2" then
         Addon.Debug:printTable(Addon.inst.cdmBinder:getBoundAdapters())
         print("-----------------------------------")
