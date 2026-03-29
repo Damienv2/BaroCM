@@ -155,6 +155,8 @@ function Group:refreshChildFrames()
     for _, child in ipairs(self.children) do
         if child:shouldShow() == true then
             table.insert(visibleChildren, child)
+        else
+            child.frame:Hide()
         end
     end
 
