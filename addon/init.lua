@@ -29,7 +29,7 @@ local function validateVersion()
         Addon.inst.root = Addon.Root:default()
         Addon.db.serializedRoot = Addon.inst.root:serialize()
     end
-    Addon.db.version = 2103
+    Addon.db.version = 2104
 end
 f:SetScript("OnEvent", function(_, event, arg1)
     if event == "ADDON_LOADED" and arg1 == addonName then
