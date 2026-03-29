@@ -71,6 +71,12 @@ function Item:afterSetParent()
     end
 end
 
+function Item:delete()
+    Addon.GroupMemberNode.delete(self)
+
+    self:stopRefreshingRuntimeState()
+end
+
 ---@param itemId number
 function Item:setItemId(itemId)
     self.itemId = itemId

@@ -45,6 +45,7 @@ function Node:_construct()
         end
     end)
 
+
     obj.isExpanded = false
 
     return obj
@@ -251,6 +252,13 @@ function Node:delete()
             end
         end
     end
+
+    self.frame:SetScript("OnEvent", nil)
+    self.frame:UnregisterAllEvents()
+    self.frame:SetScript("OnUpdate", nil)
+    self.frame:Hide()
+    self.frame:SetParent(nil)
+    self.frame = nil
 
     Addon.EventBus:send("SAVE")
     Addon.EventBus:send("NODE_DELETED", self)

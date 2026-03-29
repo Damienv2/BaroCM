@@ -11,7 +11,7 @@ function PowerBarPanel:create(powerBar, powerBarButton)
     ---@type PowerBarPanel
     local obj = Addon.ContentPanel.create(self)
 
-    obj.movableConfigPanel = Addon.MovableMixinConfigPanel.getFrame(obj.marginFrame, powerBar.movable)
+    obj.movableConfigPanel, obj.movableConfigPanelDispose = Addon.MovableMixinConfigPanel.getFrame(obj.marginFrame, powerBar.movable)
 
     obj.powerSelectionSection = Addon.LabeledSectionPanel:create(obj.marginFrame, "Power Settings", obj.movableConfigPanel)
     obj.powerSelectionSection:appendToLeftSection(
@@ -60,6 +60,14 @@ function PowerBarPanel:create(powerBar, powerBarButton)
     )
 
     return obj
+end
+
+function PowerBarPanel:delete()
+    Addon.ContentPanel.delete(self)
+
+    if self.movableConfigPanelDispose then
+        self.movableConfigPanelDispose()
+    end
 end
 
 Addon.PowerBarPanel = PowerBarPanel

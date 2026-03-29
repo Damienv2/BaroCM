@@ -46,11 +46,6 @@ function MovableMixinConfigPanel.getFrame(parentFrame, movable, background, anch
     offsetXFrame:SetPoint(Addon.FramePoint.TOPLEFT, leftGroupPositionFrame, Addon.FramePoint.TOPLEFT, 0, 0)
     offsetXFrame:SetPoint(Addon.FramePoint.TOPRIGHT, leftGroupPositionFrame, Addon.FramePoint.TOPRIGHT, 0, 0)
     offsetXFrame:Show()
-    Addon.EventBus:register("MOVABLE_MOVED", function(movedNode)
-        if movedNode == movable.parent then
-            offsetXBox:SetText(movable.offsetX)
-        end
-    end)
 
     local anchorPointFrame = Addon.Widget:createDropdown(
             "Anchor Point",
@@ -86,9 +81,10 @@ function MovableMixinConfigPanel.getFrame(parentFrame, movable, background, anch
     offsetYFrame:SetPoint(Addon.FramePoint.TOPLEFT, rightGroupPositionFrame, Addon.FramePoint.TOPLEFT, 0, 0)
     offsetYFrame:SetPoint(Addon.FramePoint.TOPRIGHT, rightGroupPositionFrame, Addon.FramePoint.TOPRIGHT, 0, 0)
     offsetYFrame:Show()
-    Addon.EventBus:register("MOVABLE_MOVED", function(movedNode)
+    local movableMovedDispose = Addon.EventBus:register("MOVABLE_MOVED", function(movedNode)
         if movedNode == movable.parent then
             offsetYBox:SetText(movable.offsetY)
+            offsetXBox:SetText(movable.offsetX)
         end
     end)
 
@@ -129,7 +125,7 @@ function MovableMixinConfigPanel.getFrame(parentFrame, movable, background, anch
 
     positionFrame:SetHeight(groupPositionHeader:GetHeight() + math.max(leftGroupPositionFrame:GetHeight(), rightGroupPositionFrame:GetHeight()))
 
-    return positionFrame
+    return positionFrame, movableMovedDispose
 end
 
 Addon.MovableMixinConfigPanel = MovableMixinConfigPanel

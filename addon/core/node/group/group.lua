@@ -79,6 +79,15 @@ function Group:afterSetParent()
     end
 end
 
+function Group:delete()
+    Addon.CollectionMemberNode.delete(self)
+
+    self.refreshChildFramesTicker:SetScript("OnUpdate", nil)
+    self.refreshChildFramesTicker:Hide()
+    self.refreshChildFramesTicker:SetParent(nil)
+    self.refreshChildFramesTicker = nil
+end
+
 ---@param maxRows number
 function Group:setMaxRows(maxRows)
     self.childrenGrid.maxRows = maxRows

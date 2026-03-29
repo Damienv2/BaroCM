@@ -89,6 +89,9 @@ end
 
 function CdmAdapterRegistry:resetAdapters()
     Addon.EventBus:send("RESET_CDM_ADAPTER")
+    for _,adapter in pairs(self.adapters)  do
+        adapter:stopPolling()
+    end
     self.adapters = self:initAdapters()
 end
 

@@ -92,7 +92,7 @@ function CooldownPanel:createSpellFrame(cooldown, cooldownButton)
     self.spellSelectionFrame:SetPoint(Addon.FramePoint.TOPLEFT, self.spellHeaderFrame, Addon.FramePoint.BOTTOMLEFT, 0, -self.margin)
     self.spellSelectionFrame:SetPoint(Addon.FramePoint.TOPRIGHT, self.spellHeaderFrame, Addon.FramePoint.BOTTOMRIGHT, 0, -self.margin)
     self.spellSelectionFrame:Show()
-    Addon.EventBus:register("CDM_FRAME_CHANGED", function()
+    self.cdmFrameChangedDispose = Addon.EventBus:register("CDM_FRAME_CHANGED", function()
         self:refreshWarningVisibility(cooldown, self.spellWarningFrame, self.spellWarningText)
     end)
 
@@ -165,7 +165,7 @@ function CooldownPanel:createAuraFrame(cooldown, cooldownButton)
     self.auraSelectionFrame:SetPoint(Addon.FramePoint.TOPLEFT, self.auraHeaderFrame, Addon.FramePoint.BOTTOMLEFT, 0, -self.margin)
     self.auraSelectionFrame:SetPoint(Addon.FramePoint.TOPRIGHT, self.auraHeaderFrame, Addon.FramePoint.BOTTOMRIGHT, 0, -self.margin)
     self.auraSelectionFrame:Show()
-    Addon.EventBus:register("CDM_FRAME_CHANGED", function()
+    self.cdmFrameChangedDispose = Addon.EventBus:register("CDM_FRAME_CHANGED", function()
         self:refreshWarningVisibility(cooldown, self.auraWarningFrame, self.auraWarningText)
     end)
 
@@ -212,6 +212,10 @@ function CooldownPanel:clearSpellAuraFrame()
         self.auraWarningFrame = nil
         self.auraWarningText = nil
     end
+
+    if self.cdmFrameChangedDispose then
+        self.cdmFrameChangedDispose()
+    end
 end
 
 ---@param cooldown Cooldown
@@ -226,6 +230,14 @@ function CooldownPanel:refreshWarningVisibility(cooldown, warningFrame, warningT
         warningText:SetText("")
         warningFrame:SetHeight(0)
         warningFrame:Hide()
+    end
+end
+
+function CooldownPanel:delete()
+    Addon.ContentPanel.delete(self)
+
+    if self.cdmFrameChangedDispose then
+        self.cdmFrameChangedDispose()
     end
 end
 

@@ -48,6 +48,16 @@ function Equipment:shouldShow()
     return parentShouldShow and shouldShow
 end
 
+function Equipment:delete()
+    Addon.Item.delete(self)
+
+    self.equipmentChangeWatcher:SetScript("OnEvent", nil)
+    self.equipmentChangeWatcher:UnregisterAllEvents()
+    self.equipmentChangeWatcher:Hide()
+    self.equipmentChangeWatcher:SetParent(nil)
+    self.equipmentChangeWatcher = nil
+end
+
 function Equipment:setSlotId(slotId)
     if slotId ~= nil then
         self:startRefreshingRuntimeState()

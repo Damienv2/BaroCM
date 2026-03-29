@@ -11,7 +11,7 @@ function GroupPanel:create(group)
     ---@type GroupPanel
     local obj = Addon.ContentPanel.create(self)
 
-    obj.positionFrame = Addon.MovableMixinConfigPanel.getFrame(obj.marginFrame, group.movable, group.background)
+    obj.positionFrame, obj.positionFrameDispose = Addon.MovableMixinConfigPanel.getFrame(obj.marginFrame, group.movable, group.background)
 
     obj.layoutFrame = CreateFrame("Frame", nil, obj.marginFrame)
     obj.layoutFrame:SetPoint(Addon.FramePoint.TOPLEFT, obj.positionFrame, Addon.FramePoint.BOTTOMLEFT, 0, -obj.margin * 2)
@@ -165,6 +165,14 @@ function GroupPanel:create(group)
     obj.iconFrame:SetHeight(obj.iconHeader:GetHeight() + obj.margin + math.max(obj.leftIconFrame:GetHeight(), obj.rightIconFrame:GetHeight()))
 
     return obj
+end
+
+function GroupPanel:delete()
+    Addon.ContentPanel.delete(self)
+
+    if self.positionFrameDispose then
+        self.positionFrameDispose()
+    end
 end
 
 Addon.GroupPanel = GroupPanel
