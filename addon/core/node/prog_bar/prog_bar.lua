@@ -105,9 +105,8 @@ function ProgBar:finalizeInit()
 end
 
 function ProgBar:delete()
-    Addon.CollectionMemberNode.delete(self)
-
     self:stopRefreshingProgress()
+    Addon.CollectionMemberNode.delete(self)
 end
 
 function ProgBar:afterSetParent()
