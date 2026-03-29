@@ -36,9 +36,13 @@ function PowerBar:finalizeInit()
     Addon.ProgBar.finalizeInit(self)
 
     if self.powerBarType ~= nil then
-        local targetPowerType = Addon.PowerBarType:toPowerBarType(self.powerBarType)
-        local powerBarColor = PowerBarColor[targetPowerType]
-        self.bar:SetStatusBarColor(unpack({powerBarColor.r, powerBarColor.g, powerBarColor.b, powerBarColor.a}))
+        local powerBarColor = self:_resolvePowerBarColor()
+        self.bar:SetStatusBarColor(
+            powerBarColor.r or 1,
+            powerBarColor.g or 1,
+            powerBarColor.b or 1,
+            powerBarColor.a or 1
+        )
 
         if self.specId == select(1, GetSpecializationInfo(GetSpecialization())) then
             self:startRefreshingProgress()
@@ -52,11 +56,24 @@ function PowerBar:setPowerBarType(powerBarType)
 
     self.powerBarType = powerBarType
 
-    local targetPowerType = Addon.PowerBarType:toPowerBarType(self.powerBarType)
-    local powerBarColor = PowerBarColor[targetPowerType]
-    self.bar:SetStatusBarColor(unpack({powerBarColor.r, powerBarColor.g, powerBarColor.b, powerBarColor.a}))
+    local powerBarColor = self:_resolvePowerBarColor()
+    self.bar:SetStatusBarColor(
+        powerBarColor.r or 1,
+        powerBarColor.g or 1,
+        powerBarColor.b or 1,
+        powerBarColor.a or 1
+    )
 
     Addon.EventBus:send("SAVE")
+end
+
+---@return table
+function PowerBar:_resolvePowerBarColor()
+    local targetPowerType = Addon.PowerBarType:toPowerBarType(self.powerBarType)
+    return PowerBarColor[targetPowerType]
+            or PowerBarColor[self.powerBarType]
+            or PowerBarColor.MANA
+            or { r = 0.2, g = 0.65, b = 1.0, a = 1.0 }
 end
 
 function PowerBar:refreshProgress()
