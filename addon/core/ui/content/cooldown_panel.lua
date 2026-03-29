@@ -223,7 +223,7 @@ function CooldownPanel:refreshWarningVisibility(cooldown, warningFrame, warningT
     local shouldWarn = cooldown and cooldown.boundCdmAdapter and cooldown.boundCdmAdapter:isAttachedToFrame() == false
 
     if shouldWarn == true then
-        warningText:SetText("The selected spell has not been enabled in Blizzard's CDM. Due to API limitations, please move the spell to Essential Cooldowns, Utility Cooldowns, or Tracked Buffs in Blizzard's CDM to enable tracking in BaroCDM. It is recommended to do this for all spells while using BaroCDM.")
+        warningText:SetText("Blizzard's CDM has not been enabled, or the selected spell has not been enabled in Blizzard's CDM. Due to API limitations, please enable Blizzard's CDM and move the spell to Essential Cooldowns, Utility Cooldowns, or Tracked Buffs in Blizzard's CDM to enable tracking in BaroCDM. It is recommended to do this for all spells while using BaroCDM.")
         warningFrame:SetHeight(28)
         warningFrame:Show()
     else
