@@ -20,9 +20,9 @@ Group.__index = Group
 Group.type = Addon.NodeType.GROUP
 
 ---@return Group
-function Group:default()
+function Group:_construct()
     ---@type Group
-    local obj = Addon.CollectionMemberNode.default(self)
+    local obj = Addon.CollectionMemberNode._construct(self)
 
     Addon.Mixin:embed(obj, "movable", Addon.MovableMixin)
     Addon.Mixin:embed(obj, "background", Addon.BackgroundMixin)

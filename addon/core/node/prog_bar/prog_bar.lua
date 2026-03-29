@@ -15,9 +15,9 @@ ProgBar.__index = ProgBar
 ProgBar.type = Addon.NodeType.PROG_BAR
 
 ---@return ProgBar
-function ProgBar:default()
+function ProgBar:_construct()
     ---@type ProgBar
-    local obj = Addon.CollectionMemberNode.default(self)
+    local obj = Addon.CollectionMemberNode._construct(self)
 
     Addon.Mixin:embed(obj, "movable", Addon.MovableMixin)
 

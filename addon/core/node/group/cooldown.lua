@@ -14,9 +14,9 @@ Cooldown.__index = Cooldown
 Cooldown.type = Addon.NodeType.COOLDOWN
 
 ---@return Cooldown
-function Cooldown:default()
+function Cooldown:_construct()
     ---@type Cooldown
-    local obj = Addon.GroupMemberNode.default(self)
+    local obj = Addon.GroupMemberNode._construct(self)
     obj.name = "New Cooldown"
 
     obj.cooldownId = nil

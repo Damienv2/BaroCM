@@ -9,9 +9,9 @@ Item.__index = Item
 Item.type = Addon.NodeType.ITEM
 
 ---@return Item
-function Item:default()
+function Item:_construct()
     ---@type Item
-    local obj = Addon.GroupMemberNode.default(self)
+    local obj = Addon.GroupMemberNode._construct(self)
     obj.name = "New Item"
 
     obj.itemId = nil

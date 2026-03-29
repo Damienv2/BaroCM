@@ -11,9 +11,9 @@ Collection.__index = Collection
 Collection.type = Addon.NodeType.COLLECTION
 
 ---@return Collection
-function Collection:default()
+function Collection:_construct()
     ---@type Collection
-    local obj = Addon.CollectionMemberNode.default(self)
+    local obj = Addon.CollectionMemberNode._construct(self)
 
     Addon.Mixin:embed(obj, "movable", Addon.MovableMixin)
     Addon.Mixin:embed(obj, "background", Addon.BackgroundMixin)

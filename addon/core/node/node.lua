@@ -18,7 +18,7 @@ Node.__index = Node
 Node.type = Addon.NodeType.NODE
 
 ---@return Node
-function Node:default()
+function Node:_construct()
     local obj = setmetatable({}, self)
     obj.parent = nil
     obj.id = self:_create_uuid4()
@@ -46,6 +46,13 @@ function Node:default()
     end)
 
     obj.isExpanded = false
+
+    return obj
+end
+
+function Node:default()
+    local obj = self:_construct()
+    obj:finalizeInit()
 
     return obj
 end
@@ -100,13 +107,14 @@ function Node.deserialize(data, parent)
         node:afterAppendChild(child)
     end
 
-    node:afterDeserialize()
+    node:finalizeInit()
 
     return node
 end
 
-function Node:afterDeserialize()
-
+function Node:finalizeInit()
+    if self._isFinalized then return end
+    self._isFinalized = true
 end
 
 ---@param parent Node

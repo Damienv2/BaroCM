@@ -8,9 +8,9 @@ AuraBar.__index = AuraBar
 AuraBar.type = Addon.NodeType.AURA_BAR
 
 ---@return AuraBar
-function AuraBar:default()
+function AuraBar:_construct()
     ---@type AuraBar
-    local obj = Addon.ProgBar.default(self)
+    local obj = Addon.ProgBar._construct(self)
 
     obj.name = "New Aura Bar"
 
@@ -30,7 +30,7 @@ end
 ---@param data table
 function AuraBar:deserializeProps(data)
     Addon.ProgBar.deserializeProps(self, data)
-    self:setAura(data.aura)
+    self.aura = data.aura
 end
 
 ---@param aura WhitelistedAura

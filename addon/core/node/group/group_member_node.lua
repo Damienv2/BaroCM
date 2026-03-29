@@ -8,9 +8,9 @@ GroupMemberNode.__index = GroupMemberNode
 GroupMemberNode.type = Addon.NodeType.GROUP_MEMBER_NODE
 
 ---@return GroupMemberNode
-function GroupMemberNode:default()
+function GroupMemberNode:_construct()
     ---@type GroupMemberNode
-    local obj = Addon.CollectionMemberNode.default(self)
+    local obj = Addon.CollectionMemberNode._construct(self)
     obj.name = "New GroupMemberNode"
     obj.specId = select(1, GetSpecializationInfo(GetSpecialization()))
 

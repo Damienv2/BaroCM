@@ -7,9 +7,9 @@ PowerBar.__index = PowerBar
 PowerBar.type = Addon.NodeType.POWER_BAR
 
 ---@return PowerBar
-function PowerBar:default()
+function PowerBar:_construct()
     ---@type PowerBar
-    local obj = Addon.ProgBar.default(self)
+    local obj = Addon.ProgBar._construct(self)
 
     obj.name = "New Power Bar"
 
@@ -29,7 +29,19 @@ end
 ---@param data table
 function PowerBar:deserializeProps(data)
     Addon.ProgBar.deserializeProps(self, data)
-    self:setPowerBarType(data.powerBarType)
+    self.powerBarType = data.powerBarType
+end
+
+function PowerBar:finalizeInit()
+    if self.powerBarType ~= nil then
+        local targetPowerType = Addon.PowerBarType:toPowerBarType(self.powerBarType)
+        local powerBarColor = PowerBarColor[targetPowerType]
+        self.bar:SetStatusBarColor(unpack({powerBarColor.r, powerBarColor.g, powerBarColor.b, powerBarColor.a}))
+
+        if self.specId == select(1, GetSpecializationInfo(GetSpecialization())) then
+            self:startRefreshingProgress()
+        end
+    end
 end
 
 ---@param powerBarType PowerBarType
@@ -38,19 +50,9 @@ function PowerBar:setPowerBarType(powerBarType)
 
     self.powerBarType = powerBarType
 
-    if powerBarType ~= nil and self.specId == select(1, GetSpecializationInfo(GetSpecialization())) then
-        local targetPowerType = Addon.PowerBarType:toPowerBarType(self.powerBarType)
-        local cur = UnitPower("player", targetPowerType)
-        local max = UnitPowerMax("player", targetPowerType)
-        self:setProgress(cur, max)
-
-        local powerBarColor = PowerBarColor[targetPowerType]
-        self.bar:SetStatusBarColor(unpack({powerBarColor.r, powerBarColor.g, powerBarColor.b, powerBarColor.a}))
-
-        self:startRefreshingProgress()
-    else
-        self:stopRefreshingProgress()
-    end
+    local targetPowerType = Addon.PowerBarType:toPowerBarType(self.powerBarType)
+    local powerBarColor = PowerBarColor[targetPowerType]
+    self.bar:SetStatusBarColor(unpack({powerBarColor.r, powerBarColor.g, powerBarColor.b, powerBarColor.a}))
 
     Addon.EventBus:send("SAVE")
 end

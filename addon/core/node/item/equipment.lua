@@ -8,9 +8,9 @@ Equipment.__index = Equipment
 Equipment.type = Addon.NodeType.EQUIPMENT
 
 ---@return Equipment
-function Equipment:default()
+function Equipment:_construct()
     ---@type Equipment
-    local obj = Addon.Item.default(self)
+    local obj = Addon.Item._construct(self)
     obj.name = "New Equipment"
 
     obj.slotId = nil

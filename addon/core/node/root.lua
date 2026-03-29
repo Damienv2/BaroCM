@@ -7,9 +7,9 @@ Root.__index = Root
 Root.type = Addon.NodeType.ROOT
 
 ---@return Root
-function Root:default()
+function Root:_construct()
     ---@type Root
-    local obj = Addon.Node.default(self)
+    local obj = Addon.Node._construct(self)
 
     obj.name = "ROOT"
     obj.rank = 0

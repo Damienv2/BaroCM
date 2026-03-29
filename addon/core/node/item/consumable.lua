@@ -7,9 +7,9 @@ Consumable.__index = Consumable
 Consumable.type = Addon.NodeType.CONSUMABLE
 
 ---@return Consumable
-function Consumable:default()
+function Consumable:_construct()
     ---@type Consumable
-    local obj = Addon.Item.default(self)
+    local obj = Addon.Item._construct(self)
     obj.name = "New Consumable"
 
     return obj

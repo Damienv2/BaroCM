@@ -7,9 +7,9 @@ CollectionMemberNode.__index = CollectionMemberNode
 CollectionMemberNode.type = Addon.NodeType.COLLECTION_MEMBER_NODE
 
 ---@return CollectionMemberNode
-function CollectionMemberNode:default()
+function CollectionMemberNode:_construct()
     ---@type CollectionMemberNode
-    local obj = Addon.Node.default(self) -- parent constructor
+    local obj = Addon.Node._construct(self) -- parent constructor
     obj.name = "New CollectionMemberNode"
 
     return obj
