@@ -3,7 +3,7 @@
 ## Notes: Enhances Blizzard's Cooldown Manager.
 ## IconTexture: Interface\AddOns\BaroCM\resources\barocm_mini_logo
 ## Author: Baromad
-## Version: 2.2.1
+## Version: 2.2.2
 ## SavedVariables: BaroCooldownManagerDB
 
 annotation.lua
@@ -25,10 +25,10 @@ core/component/movable_mixin.lua
 core/node/node_type.lua
 core/node/node.lua
 core/node/root.lua
-core/node/collection/collection.lua
 core/node/collection/collection_member_node.lua
-core/node/group/group.lua
+core/node/collection/collection.lua
 core/node/group/group_member_node.lua
+core/node/group/group.lua
 core/node/group/cooldown.lua
 core/node/group/cooldown_type.lua
 core/node/item/item.lua
