@@ -96,7 +96,7 @@ function ProgBar:deserializeProps(data)
     self.barColor = data.barColor
 end
 
-function ProgBar:afterDeserialize()
+function ProgBar:finalizeInit()
     if not self:shouldShow() then
         self.frame:Hide()
     else

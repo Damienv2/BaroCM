@@ -33,6 +33,8 @@ function PowerBar:deserializeProps(data)
 end
 
 function PowerBar:finalizeInit()
+    Addon.ProgBar.finalizeInit(self)
+
     if self.powerBarType ~= nil then
         local targetPowerType = Addon.PowerBarType:toPowerBarType(self.powerBarType)
         local powerBarColor = PowerBarColor[targetPowerType]
